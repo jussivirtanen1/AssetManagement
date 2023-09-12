@@ -1,0 +1,75 @@
+import pandas as pd
+import utils.date_utils as du
+import utils.db_utils as dbu
+import utils.am_utils as amu
+import matplotlib.pyplot as plt
+pd.set_option('display.max_columns', None)
+
+def asset_management():
+    config_df = dbu.getConfigurationsData('config/user_config.json')
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets('c')
+                        , conn = dbu.getDBConnection(user=config_df['username'][0]
+                        , host_name=config_df['host_name'][0]
+                        , db=config_df['database'][0]))
+    # Fetch full data from asset_management_db table
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery_c()
+                        , conn = dbu.getDBConnection(user=config_df['username'][0]
+                        , host_name=config_df['host_name'][0]
+                        , db=config_df['database'][0]))
+    # Get assets list as yahoo tickers
+    assets_list = amu.getAssetsList(assets_df)
+    # Fetch usable dates and non-null yahoo finance data
+
+    data = du.getDataFromYahoo(assets_list, start_date = "2022-01-01")
+
+    data_cleaned = du.getUsableDataForAssets(data)
+
+    usable_dates_list = du.getUsableDatesList(data_cleaned, freq = 'M')
+
+    yf_data = du.getUsableDatesForAssets(data_cleaned, usable_dates_list)
+
+    # Get asset portfolio by usable dates and asset positions on that date
+    asset_portfolio = amu.assetPortfolioOverTime(assets_df \
+                                               , postgresql_table \
+                                               , yf_data)
+    # Optionally, calculate asset portfolio proportions
+    asset_portfolio_proportions = amu.assetProportions(asset_portfolio)
+
+    # Define different configurations to get porportions for each of them individually
+    etf_assets_df = dbu.getConfigByInstrument(assets_df \
+                                        , 'ETF')
+    mutual_fund_assets_df = dbu.getConfigByInstrument(assets_df \
+                                        , 'Mutual fund')
+    stock_assets_df = dbu.getConfigByInstrument(assets_df \
+                                        , 'Stock')
+
+    # Plot industry proportion development by each configuration
+    plt.plot(asset_portfolio_proportions[etf_assets_df['name']])
+    plt.legend(asset_portfolio_proportions \
+            .columns \
+            .intersection(list(etf_assets_df['name'])) \
+            , loc="upper left")
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.show()
+
+    plt.plot(asset_portfolio_proportions[mutual_fund_assets_df['name']])
+    plt.legend(asset_portfolio_proportions \
+            .columns \
+            .intersection(list(mutual_fund_assets_df['name'])) \
+            , loc="upper left")
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.show()
+
+    plt.plot(asset_portfolio_proportions[stock_assets_df['name']])
+    plt.legend(asset_portfolio_proportions \
+            .columns \
+            .intersection(list(stock_assets_df['name'])) \
+            , loc="upper left")
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.show()
+
+if __name__ == "__main__":
+    asset_management()

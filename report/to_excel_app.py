@@ -1,0 +1,103 @@
+import pandas as pd
+import numpy as np
+import os
+import utils.date_utils as du
+import utils.db_utils as dbu
+import utils.am_utils as amu
+pd.set_option('display.max_columns', None)
+
+def asset_management():
+    config_df = dbu.getConfigurationsData('config/user_config.json')
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets('c') \
+                        , conn = dbu.getDBConnection(user=config_df['username'][0] \
+                        , host_name=config_df['host_name'][0] \
+                        , db=config_df['database'][0]))
+    # Fetch full data from asset_management_db table
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery_c()
+                        , conn = dbu.getDBConnection(user=config_df['username'][0]
+                        , host_name=config_df['host_name'][0]
+                        , db=config_df['database'][0]))
+    # Get assets list as yahoo tickers
+    assets_list = amu.getAssetsList(assets_df)
+    # Fetch usable dates and non-null yahoo finance data
+
+    data = du.getDataFromYahoo(assets_list, start_date = "2022-01-01")
+
+    data_cleaned = du.getUsableDataForAssets(data)
+
+    usable_dates_list = du.getUsableDatesList(data_cleaned, freq = 'M')
+
+    yf_data = du.getUsableDatesForAssets(data_cleaned, usable_dates_list)
+
+    # Get asset portfolio by usable dates and asset positions on that date
+    asset_portfolio = amu.assetPortfolioOverTime(assets_df
+                                                      , postgresql_table
+                                                      , yf_data)
+
+
+    # Calculate asset portfolio proportions of total portfolio return
+    # asset_prop_of_return = calculateProportionOfReturn(asset_portfolio)
+    # Optionally, calculate asset portfolio proportions
+    proportions_df = amu.assetProportions(asset_portfolio)
+
+    # Calculate portfolio returns times proportions
+    return_times_proportion_df = proportions_df.mul(asset_portfolio.pct_change()
+                                                    .fillna(0)
+                                                    .replace([np.inf, -np.inf], 0)
+                                                    , axis = 'columns')
+    # Traditional volatility for portfolio
+    volatitility_portfolio = np.sqrt(return_times_proportion_df.var(axis = 1))
+    volatitility_portfolio_df = pd.DataFrame(volatitility_portfolio
+                                             , columns = ['volatility']
+                                             , index = volatitility_portfolio.index)
+    # Calculate mean absolute deviation for portfolio
+    mad_portfolio = (return_times_proportion_df
+                     .sub(return_times_proportion_df
+                          .mean(axis=1), axis=0)).abs().mean(axis = 1)
+    mad_portfolio_df = pd.DataFrame(mad_portfolio
+                                    , columns = ['mad']
+                                    , index = mad_portfolio.index)
+    # Combine two measures
+    vol_df = pd.concat([volatitility_portfolio_df, mad_portfolio_df], axis = 1)
+
+    # Define different configurations to get proportions for each of them individually
+    etf_assets_df = dbu.getConfigByInstrument(assets_df, 'ETF')
+    mutual_fund_assets_df = dbu.getConfigByInstrument(assets_df, 'Mutual fund')
+    stock_assets_df = dbu.getConfigByInstrument(assets_df, 'Stock')
+
+
+    # Calculate beta of the portfolio against two indices (benchmarks):
+    # S&P500 and Stoxx Europe 600
+    # S&P500 benchmark ticker in yahoo ^GSPC
+    # Stoxx Europe 600 benchmark ticker in yahoo ^STOXX
+    betaOnSP500 = amu.betaOfPortfolio(assets_df
+                        , proportions_df.rename(columns=dict(zip(assets_df.name
+                        , assets_df.yahoo_ticker)))
+                        , '^GSPC', start_date = '2020-01-01')
+    betaOnStoxxEurope600 = amu.betaOfPortfolio(assets_df
+                        , proportions_df.rename(columns=dict(zip(assets_df.name
+                        , assets_df.yahoo_ticker)))
+                        , '^STOXX', start_date = '2020-01-01')
+    beta_df = pd.DataFrame(data = [(betaOnSP500, betaOnStoxxEurope600)]
+                        , columns=['Beta on S&P500', 'Beta on Stoxx Europe 600']
+                        , index = ['beta'])
+
+
+    # Round values for Excel
+    etf_assets_proportions = proportions_df[etf_assets_df['name']].round(2)
+    fund_assets_proportions = proportions_df[mutual_fund_assets_df['name']].round(2)
+    stock_assets_proportions = proportions_df[stock_assets_df['name']].round(2)
+    vol_df = vol_df.round(2)
+
+    with pd.ExcelWriter(os.path.join(os.path.expanduser("~")
+                                     , "Desktop"
+                                     , "Analysis_September_c.xlsx")) as writer:
+        etf_assets_proportions.to_excel(writer, sheet_name='ETF', index=True)
+        fund_assets_proportions \
+                            .to_excel(writer, sheet_name='Mutual fund', index=True)
+        stock_assets_proportions.to_excel(writer, sheet_name='Stock', index=True)
+        vol_df.to_excel(writer, sheet_name='Volatility', index=True)
+        beta_df.to_excel(writer, sheet_name='Beta', index=True)
+
+if __name__ == "__main__":
+    asset_management()
