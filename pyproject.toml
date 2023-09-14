@@ -1,20 +1,22 @@
 [tool.poetry]
-name = "asset_management"
+name = "AssetManagement"
 version = "1.0.0"
-description = "Code for analysing both personal and company asseets"
-authors = ["Jussi Virtanen <jussivirtanen1@outlook.com>"]
+description = "Project to create stable codebase for asset management"
+authors = ["Jussi Virtanen <jussi.virtanen2@protonmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-pandas = "^1.5.1"
-numpy = "^1.23.5"
-yfinance = "^0.1.87"
+python = "3.11"
+pandas = "^1.4.3"
+numpy = "^1.23.1"
+yfinance = "^0.1.74"
+statsmodels = "^0.14.0"
+matplotlib = "^3.5.3"
 SQLAlchemy = "^1.4.44"
-DateTime = "^4.7"
-matplotlib = "^3.6.2"
-psycopg2 = "^2.9.5"
-scikit-learn = "^1.2.1"
-tensorflow = "^2.11.0"
+openpyxl = "^3.1.2"
+pytest = "^7.4"
+coverage = "^7.2.7"
+pytest-cov = "^4.1.0"
+
 
 [tool.poetry.dev-dependencies]
 
