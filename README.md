@@ -1,4 +1,9 @@
 # Project to analyze portfolio with technical analysis and asset development over time
+
+## Coverage badge
+<!-- README.md -->
+[![Go Coverage](https://github.com/jussivirtanen1/AssetManagement/wiki/coverage.svg)](https://raw.githack.com/wiki/jussivirtanen1/AssetManagement/coverage.html)
+
 ## Analysis
 - Files contain ready asset development over time and technical analysis of moving averages. In addition volatilities and beta can be computed.
 

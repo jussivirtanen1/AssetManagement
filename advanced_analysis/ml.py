@@ -63,7 +63,6 @@ model.fit(x_train, y_train, batch_size= 1, epochs=3)
 predictions = model.predict(x_test)
 predictions = scaler.inverse_transform(predictions)
 rmse = np.sqrt(np.mean(predictions - y_test)**2)
-rmse
 
 
 # Plot the predictions

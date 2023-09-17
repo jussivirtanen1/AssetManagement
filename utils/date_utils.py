@@ -1,10 +1,6 @@
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import json
-import os
-import datetime
-from utils.db_utils import *
 
 def getDataFromYahoo(assets_list: list, start_date = "2020-01-01"):
     # Download data for all stocks
@@ -29,7 +25,9 @@ def getUsableDatesList(data, freq: str):
     datetime_df = pd.DataFrame(index=pd.to_datetime(data.index).strftime('%Y-%m-%d'))
     datetime_df.index = pd.to_datetime(datetime_df.index)
     # set the dataframe index with your date
-    datag = datetime_df.groupby(pd.Grouper(freq=freq))  # group by month / alternatively use MS for Month Start / referencing the previously created object
+    # group by month / alternatively use MS for Month Start
+    #  / referencing the previously created object
+    datag = datetime_df.groupby(pd.Grouper(freq=freq))
     datetime_df['datetime_col'] = datetime_df.index
     if (freq == 'D') | (freq == 'BD'):
         usable_dates_list = []
@@ -41,7 +39,8 @@ def getUsableDatesList(data, freq: str):
         # To specifically coerce the results of the groupby to a list:
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': np.max})['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datag.agg({'datetime_col': np.max})
+                                     ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
     return usable_dates_list
 
 def getUsableDatesForAssets(data, usable_dates_list: list):
@@ -56,8 +55,10 @@ def fetch_usable_dates_and_yf_data(assets_list: list, freq: str):
     datetime_df = pd.DataFrame(index=pd.to_datetime(data.index).strftime('%Y-%m-%d'))
     datetime_df.index = pd.to_datetime(datetime_df.index)
     # set the dataframe index with your date
-    datag = datetime_df.groupby(pd.Grouper(freq=freq))  # group by month / alternatively use MS for Month Start / referencing the previously created object
+    # group by month / alternatively use MS for Month Start /
+    #  referencing the previously created object
     datetime_df['datetime_col'] = datetime_df.index
+    datag = datetime_df.groupby(pd.Grouper(freq=freq))
     if (freq == 'D') | (freq == 'BD'):
         usable_dates_list = []
         for i in range(len(datetime_df)):
@@ -68,5 +69,6 @@ def fetch_usable_dates_and_yf_data(assets_list: list, freq: str):
         # To specifically coerce the results of the groupby to a list:
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': np.max})['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datag.agg({'datetime_col': np.max})
+                                     ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
     return usable_dates_list, data[data.index.isin(usable_dates_list)]
