@@ -34,8 +34,6 @@ jobs:
       - name: Install the project dependencies
         run: poetry install
       - name: Lint with ruff
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          poetry ruff .
+        run: ruff check --fix .
       - name: Test with pytest
         run: poetry run pytest -v
