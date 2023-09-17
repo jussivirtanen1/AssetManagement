@@ -32,7 +32,7 @@ target-version = "py311"
 fixable = ["ALL"]
 
 [tool.coverage.run]
-source = "."
+source = ["."]
 omit = ["./**/__init__.py"]
 
 [build-system]
