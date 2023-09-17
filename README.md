@@ -1,4 +1,9 @@
 # Project to analyze portfolio with technical analysis and asset development over time
+
+## Coverage badge
+<!-- README.md -->
+[![cov](https://jussivirtanen1.github.io/AssetManagement/badges/coverage.svg)](https://github.com/jussivirtanen1/AssetManagement/actions)
+
 ## Analysis
 - Files contain ready asset development over time and technical analysis of moving averages. In addition volatilities and beta can be computed.
 
