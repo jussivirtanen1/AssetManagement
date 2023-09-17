@@ -37,15 +37,3 @@ jobs:
         run: |
           poetry run coverage run --branch -m pytest .
           poetry run coverage report -m
-
-      - name: Update coverage report
-        uses: ncruces/go-coverage-report@v0
-        with:
-          report: 'true'
-          chart: 'true'
-          amend: 'false'
-        if: |
-          matrix.os == 'ubuntu-latest' &&
-          github.event_name == 'push'
-        continue-on-error: true
-
