@@ -2,7 +2,7 @@
 
 ## Coverage badge
 <!-- README.md -->
-[![cov](https://jussivirtanen1.github.io/AssetManagement/badges/coverage.svg)](https://github.com/jussivirtanen1/AssetManagement/actions)
+[![Go Coverage](https://github.com/jussivirtanen1/AssetManagement/wiki/coverage.svg)](https://raw.githack.com/wiki/jussivirtanen1/AssetManagement/coverage.html)
 
 ## Analysis
 - Files contain ready asset development over time and technical analysis of moving averages. In addition volatilities and beta can be computed.
