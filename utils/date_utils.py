@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import utils.db_utils as dbu
 
 def getDataFromYahoo(assets_list: list, start_date = "2020-01-01"):
     # Download data for all stocks
