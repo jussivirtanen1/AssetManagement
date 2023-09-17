@@ -35,8 +35,8 @@ jobs:
         run: poetry install
       - name: Test with pytest and run coverage
         run: |
-          coverage run --branch -m pytest .
-          coverage report -m
+          poetry run coverage run --branch -m pytest .
+          poetry run coverage report -m
 
       - name: Coverage Badge
         uses: tj-actions/coverage-badge-py@v2
