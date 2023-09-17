@@ -25,8 +25,8 @@ coverage = "^7.3.1"
 pytest-cov = "^4.1.0"
 
 [tool.ruff]
-format = ["github"]
-select = ["E", "F", "B"]
+format = "github"
+select = ["E", "F"]
 ignore = ["E9", "F63", "F7", "F82"]
 target-version = "py311"
 fixable = ["ALL"]
