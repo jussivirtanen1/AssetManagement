@@ -35,16 +35,31 @@ test_yahoo_df = pd.DataFrame(data=test_yahoo_data
                              , index = ['2023-06-28', '2023-06-29', '2023-06-30'
                                         , '2023-07-03', '2023-07-04', '2023-07-05'])
 
+def test_getDataFromYahoo():
+    yahoo_df = du.getDataFromYahoo(assets_list = ['NDA-FI.HE', 'SAMPO.HE', '0P0001K6NM.F'
+                                              , '0P000134KA.CO', 'CRM']
+                               , start_date = "2023-09-01")
+    
+    assert yahoo_df.shape[0] > 0
+    assert yahoo_df.shape[1] > 0
+    assert yahoo_df.index[0].strftime('%Y-%m-%d') == '2023-09-01'
+
+
 def test_getUsableDataForAssets():
     data = du.getUsableDataForAssets(test_yahoo_df)
     assert data.shape[0] > 0
     assert len(data) == 3
 
 def test_getUsableDatesList():
-    dates = du.getUsableDatesList(data = test_yahoo_df, freq = 'M')
-    assert len(dates) == 2
-    assert dates[0] == '2023-06-30'
-    assert dates[1] == '2023-07-03'
+    dates_M = du.getUsableDatesList(data = test_yahoo_df, freq = 'M')
+    dates_D = du.getUsableDatesList(data = test_yahoo_df, freq = 'D')
+    assert len(dates_M) == 2
+    assert dates_M[0] == '2023-06-30'
+    assert dates_M[1] == '2023-07-03'
+    assert len(dates_D) == 3
+    assert dates_D[0] == '2023-06-28'
+    assert dates_D[1] == '2023-06-30'
+    assert dates_D[2] == '2023-07-03'
 
 def test_getUsableDatesForAssets():
     assert test_yahoo_df.isnull().values.any()

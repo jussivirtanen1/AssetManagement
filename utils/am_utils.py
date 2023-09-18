@@ -139,13 +139,13 @@ def betaOfPortfolio(assets_config_df
         #  the same dates and therefore same date range
         benchmark_filled = asset_price_df \
                             .join(benchmark_df, how='outer') \
-                            .fillna(method='ffill')['benchmark_price']
+                            .ffill()['benchmark_price']
         asset_price_filled = asset_price_df \
                              .join(benchmark_df, how='outer') \
-                             .fillna(method='ffill')['asset_price']
+                             .ffill()['asset_price']
         # Compute (daily) returns
-        benchmark_return = benchmark_filled.pct_change()
-        asset_price_return = asset_price_filled.pct_change()
+        benchmark_return = benchmark_filled.ffill().pct_change()
+        asset_price_return = asset_price_filled.ffill().pct_change()
         # Old way of calculating covariance manually
         # Calculate covariane of asset and benchmark
         covar = asset_price_return.cov(benchmark_return)
@@ -155,7 +155,7 @@ def betaOfPortfolio(assets_config_df
         # Append to beta list created earlier.
         # Divide by 100 to get percentage as decimal
         # and then multiply by proportion of asset in portfolio
-        beta_list.append((covar/benchmark_var) * 
-                         (proportions_df.tail(1)/100)[ticker][0])
+        beta_list.append((covar/benchmark_var) * (proportions_df.tail(1)/100)[ticker].iloc[0])
     # Return portfolio weighted beta
     return sum(beta_list).round(2)
+

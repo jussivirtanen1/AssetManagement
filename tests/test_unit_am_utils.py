@@ -189,5 +189,34 @@ def test_assetProportions():
     assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
                                                        , test_postgresql_df
                                                        , am_test_yahoo_df)
-    assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1)[0] == 100.0
-    assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1)[1] == 100.0
+    assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[0] == 100.0
+    assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[1] == 100.0
+
+def test_calculateProportionOfReturn():
+    assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
+                                                       , test_postgresql_df
+                                                       , am_test_yahoo_df)
+    testReturnDF = amu.calculateProportionOfReturn(assetPortfolioOverTime_df)
+    assert testReturnDF.iloc[0].all()
+    assert testReturnDF.sum(axis=1).iloc[1] == 1.0
+    assert testReturnDF['Nordea Bank Oyj'].iloc[1].round(6) == 0.000149
+    assert testReturnDF['USA Indeksirahasto'].iloc[1].round(6) == 0.998377
+    assert testReturnDF['Salesforce'].iloc[1].round(5) == 0.00178
+
+
+def test_betaOfPortfolio():
+  assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
+                                                      , test_postgresql_df
+                                                      , am_test_yahoo_df)
+  beta_proportions_df = amu.assetProportions(assetPortfolioOverTime_df)
+  assert amu.betaOfPortfolio(test_assets_config_df
+                          ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
+                          ,test_assets_config_df.yahoo_ticker)))
+                          ,'^GSPC'
+                          ,start_date = '2023-01-01') == 0.83
+
+  assert amu.betaOfPortfolio(test_assets_config_df
+                          ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
+                          ,test_assets_config_df.yahoo_ticker)))
+                          ,'^STOXX'
+                          ,start_date = '2023-01-01') == 0.57
