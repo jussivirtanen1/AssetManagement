@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import yfinance as yf
 
 def getDataFromYahoo(assets_list: list, start_date = "2020-01-01"):
@@ -29,46 +28,19 @@ def getUsableDatesList(data, freq: str):
     #  / referencing the previously created object
     datag = datetime_df.groupby(pd.Grouper(freq=freq))
     datetime_df['datetime_col'] = datetime_df.index
-    if (freq == 'D') | (freq == 'BD'):
+    if (freq == 'D'):
         usable_dates_list = []
         for i in range(len(datetime_df)):
             usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
     else:
         # Finally, find the max date in each month
-        datetime_df = datag.agg({'datetime_col': np.max})
+        datetime_df = datag['datetime_col'].max()
         # To specifically coerce the results of the groupby to a list:
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': np.max})
+            usable_dates_list.append(datag.agg({'datetime_col': 'max'})
                                      ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
     return usable_dates_list
 
 def getUsableDatesForAssets(data, usable_dates_list: list):
     return data[data.index.isin(usable_dates_list)]
-
-
-def fetch_usable_dates_and_yf_data(assets_list: list, freq: str):
-    data_init = getDataFromYahoo(assets_list)
-    data = getUsableDataForAssets(data_init)
-
-    # Functionality to find usable dates for the data
-    datetime_df = pd.DataFrame(index=pd.to_datetime(data.index).strftime('%Y-%m-%d'))
-    datetime_df.index = pd.to_datetime(datetime_df.index)
-    # set the dataframe index with your date
-    # group by month / alternatively use MS for Month Start /
-    #  referencing the previously created object
-    datetime_df['datetime_col'] = datetime_df.index
-    datag = datetime_df.groupby(pd.Grouper(freq=freq))
-    if (freq == 'D') | (freq == 'BD'):
-        usable_dates_list = []
-        for i in range(len(datetime_df)):
-            usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
-    else:
-        # Finally, find the max date in each month
-        datetime_df = datag.agg({'datetime_col': np.max})
-        # To specifically coerce the results of the groupby to a list:
-        usable_dates_list = []
-        for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': np.max})
-                                     ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
-    return usable_dates_list, data[data.index.isin(usable_dates_list)]
