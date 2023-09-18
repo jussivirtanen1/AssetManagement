@@ -155,7 +155,9 @@ def betaOfPortfolio(assets_config_df
         # Append to beta list created earlier.
         # Divide by 100 to get percentage as decimal
         # and then multiply by proportion of asset in portfolio
-        beta_list.append((covar/benchmark_var) * (proportions_df.tail(1)/100)[ticker].iloc[0])
+        beta_list.append((covar/benchmark_var) *
+                        (proportions_df.tail(1)/100)
+                        [ticker].iloc[0])
     # Return portfolio weighted beta
     return sum(beta_list).round(2)
 

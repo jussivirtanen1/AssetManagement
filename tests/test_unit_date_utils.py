@@ -36,8 +36,9 @@ test_yahoo_df = pd.DataFrame(data=test_yahoo_data
                                         , '2023-07-03', '2023-07-04', '2023-07-05'])
 
 def test_getDataFromYahoo():
-    yahoo_df = du.getDataFromYahoo(assets_list = ['NDA-FI.HE', 'SAMPO.HE', '0P0001K6NM.F'
-                                              , '0P000134KA.CO', 'CRM']
+    yahoo_df = du.getDataFromYahoo(assets_list = ['NDA-FI.HE', 'SAMPO.HE'
+                                            ,'0P0001K6NM.F'
+                                            ,'0P000134KA.CO', 'CRM']
                                , start_date = "2023-09-01")
     
     assert yahoo_df.shape[0] > 0
