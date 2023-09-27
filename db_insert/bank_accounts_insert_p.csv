@@ -1,5 +1,7 @@
 event_type,name,date,return_type,currency,amount,bank,usage,account
 #Examples below
+#Nosto,Svea Säästötili,2023-09-20,Lyhyt korko,EUR,XX,Svea,"Laskut",Säästötili
+#Nosto,Svea Säästötili,2023-09-25,Lyhyt korko,EUR,XX,Svea,"Sampo osto ja käyttörahaa",Säästötili
 #Nosto,Svea Säästötili,2024-01-22,Lyhyt korko,EUR,xx,Svea,"",Säästötili
 #Talletus,Svea Säästötili,2023-12-30,Lyhyt korko,EUR,x,Svea,"",Säästötili
 #Talletus,Svea Säästötili,2023-11-30,Lyhyt korko,EUR,xx,Svea,"",Säästötili

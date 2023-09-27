@@ -1,5 +1,7 @@
 event_type,name,isin,ticker,region,exchange,date,return_type,industry,instrument,quantity,amount_no_fee,fee,currency,amount,bank,usage,account
 #Examples below
+#Osto,Sampo Oyj,,,Suomi,,2023-09-25,Osake,Vakuutus,Osake,X,XX.X,X,EUR,X,Nordea,,Osakesäästötili
+#Osto,CapMan Oyj,,,Suomi,,2023-09-11,Osake,Pääomasijoitukset,Osake,X,XX.X,X,EUR,X,Nordea,,Osakesäästötili
 #Merkintä,Tanska Indeksirahasto,,,Tanska,,2024-01-30,Osakerahasto,Yleisindeksi,Osakerahasto,X.XX,xx,0,EUR,xx,Nordnet,,Arvo-osuustili
 #Merkintä,USA Indeksirahasto,,,USA,,2023-11-30,Osakerahasto,Yleisindeksi,Osakerahasto,X.XX,xxx,0,EUR,xx,Nordnet,,Arvo-osuustili
 #Merkintä,Eurooppa Indeksirahasto,,,Eurooppa,,2023-10-30,Osakerahasto,Yleisindeksi,Osakerahasto,x.xx,XX,0,EUR,xx,Nordnet,,Arvo-osuustili

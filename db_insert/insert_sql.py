@@ -13,14 +13,18 @@ def insertBankAccounts():
     dbu.insertToDBFromFile('asset_management_p'
                             ,'bank_accounts'
                             ,key_columns = ['event_type', 'name', 'date'
-                            , 'return_type', 'amount', 'bank', 'account'])
+                            , 'return_type', 'amount', 'bank', 'account']
+                            ,schema_attr='p')
     
 def insertTransactions():
     dbu.insertToDBFromFile('asset_management_p' \
-    ,'transactions',
-    key_columns = ['event_type', 'name', 'date', 'return_type', 'industry', \
-    'instrument', 'quantity', 'amount', 'bank', 'account'])
+    ,'transactions'
+    ,key_columns = ['event_type', 'name', 'date', 'return_type', 'industry', \
+    'instrument', 'quantity', 'amount', 'bank', 'account']
+    ,schema_attr='p')
+    # key_columns = ['date', 'name', 'currency', 'quantity', 'amount'])
 
 if __name__ == "__main__":
-    # insertBankAccounts()
+    print('Executing insert database operation!')
+    insertBankAccounts()
     # insertTransactions()
