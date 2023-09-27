@@ -48,7 +48,7 @@ def getAssets(type: str):
     return query
 
 
-def insertToDBFromFile(schema, table, key_columns: list):
+def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
     query = f"""SELECT * FROM {schema}.{table}"""
     config_df = getConfigurationsData('config/user_config.json')
     db_conn = getDBConnection(user=config_df['username'][0] \
@@ -57,7 +57,9 @@ def insertToDBFromFile(schema, table, key_columns: list):
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows
-    insert_df = pd.read_csv(f'db_insert_files/{table}_insert.csv', comment="#")
+    insert_df = pd.read_csv(f'db_insert/{table}_insert_{schema_attr}.csv'
+                            , comment="#"
+                            , quotechar='"')
     insert_file_columns = insert_df.columns
     # Convert date column to correct datetime format
     insert_df['date'] = pd.to_datetime(insert_df['date']
@@ -65,13 +67,12 @@ def insertToDBFromFile(schema, table, key_columns: list):
                                        .dt.date
     # Convert insert dataframe's other column datatypes to same as in SQL table
     insert_df = insert_df.astype(db_df.dtypes.to_dict())
-
     # Check that datatypes match between dataframes, should be True
-    if (insert_df.dtypes == db_df.dtypes).all() is not True:
+    if not ((insert_df.dtypes == db_df.dtypes).all()):
         raise ValueError('Data types between db and insert dataframes do not match!')
     
     # Check that column names between insert df and database df match
-    if (set(db_df.columns) == set(insert_df.columns)) is not True:
+    if not (set(db_df.columns) == set(insert_df.columns)):
         raise ValueError('Columns between insert file dataframe \
                           and database dataframe do not match!')
     
@@ -92,6 +93,8 @@ def insertToDBFromFile(schema, table, key_columns: list):
                      ,if_exists="append"
                      ,index=False)
     # Empty (overwrite) existing insert file
-    write_file_name = f'db_insert_files/{table}_insert.csv'
+    write_file_name = f'db_insert/{table}_insert_{schema_attr}.csv'
+    print("succesfully loaded data in to database!")
     pd.DataFrame(data=[], columns = insert_file_columns) \
                         .to_csv(write_file_name, index = False)
+    print("Succesfully emptied insert table!")
