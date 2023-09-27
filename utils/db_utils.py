@@ -57,7 +57,9 @@ def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows
-    insert_df = pd.read_csv(f'db_insert/{table}_insert_{schema_attr}.csv', comment="#", quotechar='"')
+    insert_df = pd.read_csv(f'db_insert/{table}_insert_{schema_attr}.csv'
+                            , comment="#"
+                            , quotechar='"')
     insert_file_columns = insert_df.columns
     # Convert date column to correct datetime format
     insert_df['date'] = pd.to_datetime(insert_df['date']
