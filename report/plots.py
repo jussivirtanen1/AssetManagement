@@ -8,14 +8,10 @@ pd.set_option('display.max_columns', None)
 def asset_management():
     config_df = dbu.getConfigurationsData('config/user_config.json')
     assets_df = dbu.fetchDataFromDB(dbu.getAssets('c')
-                        , conn = dbu.getDBConnection(user=config_df['username'][0]
-                        , host_name=config_df['host_name'][0]
-                        , db=config_df['database'][0]))
+                        , conn = dbu.getDBConnection(env = 'prod', user_file_name='config/user_config.json', user_index=0))
     # Fetch full data from asset_management_db table
     postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery_c()
-                        , conn = dbu.getDBConnection(user=config_df['username'][0]
-                        , host_name=config_df['host_name'][0]
-                        , db=config_df['database'][0]))
+                        , conn = dbu.getDBConnection(env = 'prod', user_file_name='config/user_config.json', user_index=0))
     # Get assets list as yahoo tickers
     assets_list = amu.getAssetsList(assets_df)
     # Fetch usable dates and non-null yahoo finance data

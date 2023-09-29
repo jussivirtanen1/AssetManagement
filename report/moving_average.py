@@ -11,9 +11,7 @@ def ma_plots_all_stock():
 
     config_df = dbu.getConfigurationsData('config/user_config.json')
     stock_config_df = dbu.fetchDataFromDB(dbu.getAssets('c') \
-                        , conn = dbu.getDBConnection(user=config_df['username'][0] \
-                        , host_name=config_df['host_name'][0] \
-                        , db=config_df['database'][0]))
+                        , conn = dbu.getDBConnection(env = 'prod', user_file_name='config/user_config.json', user_index=0))
     df_list = list()
 
     for ticker in stock_config_df['yahoo_ticker']:
