@@ -7,7 +7,7 @@ import utils.am_utils as amu
 pd.set_option('display.max_columns', None)
 
 def asset_management():
-    config_df = dbu.getConfigurationsData('config/user_config.json')
+#     config_df = dbu.getConfigurationsData('config/user_config.json')
     assets_df = dbu.fetchDataFromDB(dbu.getAssets('c') \
             ,conn = dbu.getDBConnection(env = 'prod' \
                                         ,user_file_name='config/user_config.json' \

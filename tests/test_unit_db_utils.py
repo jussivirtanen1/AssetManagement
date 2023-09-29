@@ -1,8 +1,6 @@
 import utils.db_utils as dbu
 import pandas as pd
 import numpy as np
-import configparser
-import getpass
 
 # Test dataframes for assets config
 test_assets_config_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
