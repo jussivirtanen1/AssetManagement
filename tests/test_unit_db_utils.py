@@ -1,6 +1,5 @@
 import utils.db_utils as dbu
 import pandas as pd
-import numpy as np
 
 # Test dataframes for assets config
 test_assets_config_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
@@ -24,8 +23,10 @@ test_assets_config_df = pd.DataFrame(data=test_assets_config_data)
 
 def test_getConfigByInstrument():
 # Test with valid instrument
-    mutual_fund_config_df = dbu.getConfigByInstrument(test_assets_config_df, 'Mutual fund')
-    stock_config_df = dbu.getConfigByInstrument(test_assets_config_df, 'Stock')
+    mutual_fund_config_df = dbu.getConfigByInstrument(test_assets_config_df \
+                                                    ,'Mutual fund')
+    stock_config_df = dbu.getConfigByInstrument(test_assets_config_df \
+                                                ,'Stock')
     assert len(mutual_fund_config_df) == 2
     assert len(stock_config_df) == 3
 
@@ -39,14 +40,18 @@ def test_getConfigurationsData():
     assert user_config_df['engine'][0] == 'postgresql+psycopg2://'
 
 def test_getDBConnection():
-    db_conn_0 = dbu.getDBConnection(env = 'test', user_file_name='tests/mock_user_config.json', user_index=0)
+    db_conn_0 = dbu.getDBConnection(env = 'test' \
+                                    ,user_file_name='tests/mock_user_config.json' \
+                                    ,user_index=0)
     assert db_conn_0.url.username == 'testuser'
     assert db_conn_0.url.host == 'localhost'
     assert db_conn_0.url.database == 'testdb'
     assert db_conn_0.url.port == 5432
     assert db_conn_0.url.drivername == 'postgresql+psycopg2'
 
-    db_conn_1 = dbu.getDBConnection(env = 'test', user_file_name='tests/mock_user_config.json', user_index=1)
+    db_conn_1 = dbu.getDBConnection(env = 'test' \
+                                    ,user_file_name='tests/mock_user_config.json' \
+                                    ,user_index=1)
     assert db_conn_1.url.username == 'produser'
     assert db_conn_1.url.host == 'example.com'
     assert db_conn_1.url.database == 'proddb'
