@@ -2,7 +2,6 @@ import pandas as pd
 import json
 from sqlalchemy import create_engine
 import configparser
-import getpass
 config = configparser.ConfigParser()
 pd.set_option('display.max_columns', None)
 
@@ -33,7 +32,8 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
     engine_string = config_df['engine'][user_index] \
                     + config_df['user_name'][user_index] + ':' \
                     + config.get('PASSWORDS', 'password') \
-                    + '@' + config_df['host_name'][user_index] + ':' + config_df['port'][user_index] \
+                    + '@' + config_df['host_name'][user_index] \
+                    + ':' + config_df['port'][user_index] \
                     + '/' + config_df['database'][user_index]
     conn = create_engine(engine_string)
     return conn
@@ -54,9 +54,10 @@ def getAssets(type: str):
 def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
     query = f"""SELECT * FROM {schema}.{table}"""
     config_df = getConfigurationsData('config/user_config.json')
-    db_conn = getDBConnection(user_file_name='config/user_config.json', user=config_df['username'][0] \
-                    , host_name=config_df['host_name'][0] \
-                    , db=config_df['database'][0], user_index=0)
+    db_conn = getDBConnection(user_file_name='config/user_config.json' \
+                    ,user=config_df['username'][0] \
+                    ,host_name=config_df['host_name'][0] \
+                    ,db=config_df['database'][0], user_index=0)
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows
