@@ -2,7 +2,9 @@
 
 ## Coverage badge
 <!-- README.md -->
-[![codecov](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
+[![codecov on main](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?branch=main&token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
+[![codecov on dev](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?branch=dev&token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
+
 
 ## Analysis
 - Files contain ready asset development over time and technical analysis of moving averages. In addition volatilities and beta can be computed.
