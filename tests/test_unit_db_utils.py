@@ -58,4 +58,10 @@ def test_getDBConnection():
     assert db_conn_1.url.port == 5432
     assert db_conn_1.url.drivername == 'postgresql+psycopg2'
 
+def test_DBQuery():
+    db_query = dbu.getDBQuery(type = 'test')
+    assert db_query == 'SELECT * FROM asset_management_test.transactions'
 
+def test_getAssets():
+    db_query = dbu.getAssets(type = 'test')
+    assert db_query == 'SELECT * FROM asset_management_test.assets'
