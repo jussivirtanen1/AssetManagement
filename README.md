@@ -1,9 +1,8 @@
 # Project to analyze portfolio with technical analysis and asset development over time
 
-## Coverage badge
-<!-- README.md -->
-[![codecov on main](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?branch=main&token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
-[![codecov on dev](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?branch=dev&token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
+## Coverage badge for dev
+[![codecov](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?branch=dev&token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
+
 
 
 ## Analysis
@@ -18,6 +17,6 @@
 - Github Actions
 - Pytest and coverage
 - Python and PostgreSQL
-- Poetry
 ### Consideration
+- Poetry
 - Docker
