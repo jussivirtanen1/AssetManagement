@@ -2,9 +2,7 @@ import pandas as pd
 import json
 from sqlalchemy import create_engine
 import configparser
-import getpass
 config = configparser.ConfigParser()
-config.read('config/passwords.config')
 pd.set_option('display.max_columns', None)
 
 def getConfigByInstrument(assets_config_df, instrument):
@@ -22,16 +20,21 @@ def fetchDataFromDB(query, conn):
     #postgresql_table['date'] = postgresql_table['date'].astype(str)
     return postgresql_table
 
-def getDBConnection(user: str, host_name: str, db: str):
-    with open('config/user_config.json','r') as f:
+def getDBConnection(env: str, user_file_name: str, user_index = 0):
+    with open(user_file_name, 'r') as f:
         user_config_data = json.loads(f.read())
         config_df = pd.json_normalize(user_config_data, record_path =['config'])
+    if env == 'prod':
+        config.read('config/passwords.config')
+    else:
+        config.read('tests/passwords_tests.config')
     # Specify for database connection
-    port = config_df['port'][0]
-    engine_string = config_df['engine'][0] \
-                    + user + ':' \
-                    + config.get('PASSWORDS', 'password_' + getpass.getuser()) \
-                    + '@' + host_name + ':' + port + '/' + db
+    engine_string = config_df['engine'][user_index] \
+                    + config_df['user_name'][user_index] + ':' \
+                    + config.get('PASSWORDS', 'password') \
+                    + '@' + config_df['host_name'][user_index] \
+                    + ':' + config_df['port'][user_index] \
+                    + '/' + config_df['database'][user_index]
     conn = create_engine(engine_string)
     return conn
 
@@ -51,9 +54,10 @@ def getAssets(type: str):
 def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
     query = f"""SELECT * FROM {schema}.{table}"""
     config_df = getConfigurationsData('config/user_config.json')
-    db_conn = getDBConnection(user=config_df['username'][0] \
-                    , host_name=config_df['host_name'][0] \
-                    , db=config_df['database'][0])
+    db_conn = getDBConnection(user_file_name='config/user_config.json' \
+                    ,user=config_df['username'][0] \
+                    ,host_name=config_df['host_name'][0] \
+                    ,db=config_df['database'][0], user_index=0)
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows

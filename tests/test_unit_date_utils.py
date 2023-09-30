@@ -39,7 +39,7 @@ def test_getDataFromYahoo():
     yahoo_df = du.getDataFromYahoo(assets_list = ['NDA-FI.HE', 'SAMPO.HE'
                                             ,'0P0001K6NM.F'
                                             ,'0P000134KA.CO', 'CRM']
-                               , start_date = "2023-09-01")
+                            , start_date = "2023-09-01")
     
     assert yahoo_df.shape[0] > 0
     assert yahoo_df.shape[1] > 0

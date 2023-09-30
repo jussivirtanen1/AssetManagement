@@ -5,15 +5,15 @@ import utils.db_utils as dbu
 import utils.am_utils as amu
 
 config_df = dbu.getConfigurationsData('config/user_config.json')
-assets_config_df = dbu.fetchDataFromDB(dbu.getAssets('c')
-                    , conn = dbu.getDBConnection(user=config_df['username'][0]
-                    , host_name=config_df['host_name'][0]
-                    , db=config_df['database'][0]))
+assets_config_df = dbu.fetchDataFromDB(dbu.getAssets('c') \
+                    ,conn = dbu.getDBConnection(env = 'prod' \
+                    ,user_file_name='config/user_config.json' \
+                    ,user_index=0))
 # Fetch full data from asset_management_db table
 postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery_c()
-                    , conn = dbu.getDBConnection(user=config_df['username'][0]
-                    , host_name=config_df['host_name'][0]
-                    , db=config_df['database'][0]))
+                    ,conn = dbu.getDBConnection(env = 'prod' \
+                    ,user_file_name='config/user_config.json' \
+                    ,user_index=0))
 # Get assets list as yahoo tickers
 assets_list = dbu.getAssetsList(assets_config_df)
 # Fetch usable dates and non-null yahoo finance data
