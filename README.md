@@ -2,7 +2,7 @@
 
 ## Coverage badge
 <!-- README.md -->
-[![Go Coverage](https://github.com/jussivirtanen1/AssetManagement/wiki/coverage.svg)](https://raw.githack.com/wiki/jussivirtanen1/AssetManagement/coverage.html)
+[![codecov](https://codecov.io/gh/jussivirtanen1/AssetManagement/graph/badge.svg?token=WDE38GTPO2)](https://codecov.io/gh/jussivirtanen1/AssetManagement)
 
 ## Analysis
 - Files contain ready asset development over time and technical analysis of moving averages. In addition volatilities and beta can be computed.
@@ -16,6 +16,6 @@
 - Github Actions
 - Pytest and coverage
 - Python and PostgreSQL
-### Consideration
 - Poetry
+### Consideration
 - Docker
