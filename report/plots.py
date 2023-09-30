@@ -7,12 +7,12 @@ pd.set_option('display.max_columns', None)
 
 def asset_management():
 #     config_df = dbu.getConfigurationsData('config/user_config.json')
-    assets_df = dbu.fetchDataFromDB(dbu.getAssets('c')
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets(type = 'c')
                         ,conn = dbu.getDBConnection(env = 'prod'
                         ,user_file_name='config/user_config.json'
                         ,user_index=0))
     # Fetch full data from asset_management_db table
-    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery_c() \
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(type = 'c') \
                         ,conn = dbu.getDBConnection(env = 'prod' \
                         ,user_file_name='config/user_config.json' \
                         ,user_index=0))

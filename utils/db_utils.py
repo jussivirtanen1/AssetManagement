@@ -38,12 +38,8 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
     conn = create_engine(engine_string)
     return conn
 
-def getDBQuery_p():
-    query = """SELECT * FROM asset_management_p.transactions"""
-    return query
-
-def getDBQuery_c():
-    query = """SELECT * FROM asset_management_c.transactions"""
+def getDBQuery(type: str):
+    query = f"""SELECT * FROM asset_management_{type}.transactions"""
     return query
 
 def getAssets(type: str):
