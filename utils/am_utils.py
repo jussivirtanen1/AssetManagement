@@ -32,7 +32,6 @@ def getAssetQuantitiesTillDate(merged_big_df, date):
                         .groupby(['name'])['quantity'].sum()
 
 def calculateQuantitiesForEachAsset(merged_big_df, usable_dates_list):
-    df_list = []
     for date in usable_dates_list:
         df_list.append(getAssetQuantitiesTillDate(merged_big_df, date)
                        .to_frame()

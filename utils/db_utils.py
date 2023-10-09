@@ -38,13 +38,35 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
     conn = create_engine(engine_string)
     return conn
 
-def getDBQuery(type: str):
-    query = f"""SELECT * FROM asset_management_{type}.transactions"""
+def getDBQuery(filter: int):
+    query = f"""SELECT event_type
+                      ,asset_id
+                      ,owner_id
+                      ,name
+                      ,date
+                      ,quantity
+                      ,price_fx
+                      ,price_eur
+                      ,amount
+                      FROM asset_management_prod.asset_transactions
+                      WHERE owner_id = {filter}"""
     return query
 
-def getAssets(type: str):
-    query = f"""SELECT * FROM asset_management_{type}.assets"""
+def getAssets(filter: int):
+    query = f"""SELECT id.name
+                      ,id.asset_id
+                      ,id.yahoo_ticker
+                      ,id.yahoo_fx_ticker
+                FROM asset_management_prod.asset_ids AS id
+                LEFT JOIN asset_management_prod.asset_owner AS own ON id.asset_id = own.asset_id
+                WHERE owner_id = {filter}
+                """
     return query
+
+
+# def getAssets(type: str):
+#     query = f"""SELECT * FROM asset_management_{type}.assets"""
+#     return query
 
 
 def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):

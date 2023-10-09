@@ -5,12 +5,12 @@ import utils.db_utils as dbu
 import utils.am_utils as amu
 
 config_df = dbu.getConfigurationsData('config/user_config.json')
-assets_config_df = dbu.fetchDataFromDB(dbu.getAssets(type = 'c') \
+assets_config_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20) \
                     ,conn = dbu.getDBConnection(env = 'prod' \
                     ,user_file_name='config/user_config.json' \
                     ,user_index=0))
 # Fetch full data from asset_management_db table
-postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(type = 'c') \
+postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 20) \
                     ,conn = dbu.getDBConnection(env = 'prod' \
                     ,user_file_name='config/user_config.json' \
                     ,user_index=0))

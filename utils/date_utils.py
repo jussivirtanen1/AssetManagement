@@ -14,6 +14,8 @@ def getUsableDataForAssets(data):
     data_2 = data.copy()
     data_2['EUREUR=X'] = 1.0
     # data.loc[:, 'EUREUR=X'] = 1.0
+    # Forward fill and backfill any NaN values. Some assets have no data for some dates.
+    data_2 = data_2.ffill().bfill()
     # Remove any rows with NaN values
     data_2 = data_2[~data_2.isnull().any(axis=1)]
     return data_2
