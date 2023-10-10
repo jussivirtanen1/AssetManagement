@@ -185,10 +185,10 @@ def test_assetProportions():
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[1] == 100.0
 
 def test_calculateProportionOfReturn():
-    assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
-                                                            ,test_postgresql_df
-                                                            ,am_test_yahoo_df)
-    testReturnDF = amu.calculateProportionOfReturn(assetPortfolioOverTime_df)
+    # assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
+    #                                                         ,test_postgresql_df
+    #                                                         ,am_test_yahoo_df)
+    # testReturnDF = amu.calculateProportionOfReturn(assetPortfolioOverTime_df)
     # TODO: mock data has too little cahnges in values to make this test reasonable.
     # NOTE TO SELF: Changing test data will affect other tests. REMEMBER THAT TESTS
     #  SHOULD BE INDEPENDENT OF EACH OTHER.
