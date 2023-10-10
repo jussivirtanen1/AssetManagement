@@ -7,7 +7,6 @@ import utils.am_utils as amu
 pd.set_option('display.max_columns', None)
 
 def asset_management():
-#     config_df = dbu.getConfigurationsData('config/user_config.json')
     assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20) \
             ,conn = dbu.getDBConnection(env = 'prod' \
                                         ,user_file_name='config/user_config.json' \
@@ -34,10 +33,10 @@ def asset_management():
                                                 ,postgresql_table
                                                 ,yf_data)
 
-
     # Calculate asset portfolio proportions of total portfolio return
-    # asset_prop_of_return = calculateProportionOfReturn(asset_portfolio)
-    # Optionally, calculate asset portfolio proportions
+    asset_contr = amu.calculateProportionOfReturn(asset_portfolio)
+
+    # Calculate asset portfolio proportions
     proportions_df = amu.assetProportions(asset_portfolio)
 
     # Calculate portfolio returns times proportions
@@ -45,26 +44,8 @@ def asset_management():
                                                     .fillna(0)
                                                     .replace([np.inf, -np.inf], 0)
                                                     , axis = 'columns')
-    # Traditional volatility for portfolio
-    volatitility_portfolio = np.sqrt(return_times_proportion_df.var(axis = 1))
-    volatitility_portfolio_df = pd.DataFrame(volatitility_portfolio
-                                             , columns = ['volatility']
-                                             , index = volatitility_portfolio.index)
-    # Calculate mean absolute deviation for portfolio
-    mad_portfolio = (return_times_proportion_df
-                     .sub(return_times_proportion_df
-                          .mean(axis=1), axis=0)).abs().mean(axis = 1)
-    mad_portfolio_df = pd.DataFrame(mad_portfolio
-                                    , columns = ['mad']
-                                    , index = mad_portfolio.index)
-    # Combine two measures
-    vol_df = pd.concat([volatitility_portfolio_df, mad_portfolio_df], axis = 1)
-
-    # Define different configurations to get proportions for each of them individually
-    etf_assets_df = dbu.getConfigByInstrument(assets_df, 'ETF')
-    mutual_fund_assets_df = dbu.getConfigByInstrument(assets_df, 'Mutual fund')
-    stock_assets_df = dbu.getConfigByInstrument(assets_df, 'Stock')
-
+    
+    vol_df = amu.volatilityStatistics(return_times_proportion_df)
 
     # Calculate beta of the portfolio against two indices (benchmarks):
     # S&P500 and Stoxx Europe 600
@@ -81,7 +62,11 @@ def asset_management():
     beta_df = pd.DataFrame(data = [(betaOnSP500, betaOnStoxxEurope600)]
                         , columns=['Beta on S&P500', 'Beta on Stoxx Europe 600']
                         , index = ['beta'])
-
+    
+    # Define different asset types to get proportions for each of them individually
+    etf_assets_df = dbu.getConfigByInstrument(assets_df, 'ETF')
+    mutual_fund_assets_df = dbu.getConfigByInstrument(assets_df, 'Mutual fund')
+    stock_assets_df = dbu.getConfigByInstrument(assets_df, 'Stock')
 
     # Round values for Excel
     etf_assets_proportions = proportions_df[etf_assets_df['name']].round(2)
@@ -96,6 +81,7 @@ def asset_management():
         fund_assets_proportions \
                             .to_excel(writer, sheet_name='Mutual fund', index=True)
         stock_assets_proportions.to_excel(writer, sheet_name='Stock', index=True)
+        asset_contr.to_excel(writer, sheet_name='Asset contribution', index=True)
         vol_df.to_excel(writer, sheet_name='Volatility', index=True)
         beta_df.to_excel(writer, sheet_name='Beta', index=True)
 
