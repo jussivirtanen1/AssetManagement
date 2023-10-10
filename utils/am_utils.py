@@ -86,7 +86,6 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
         # some currency defined in row 35, hardcoded for now.
         df_3 = pd.DataFrame() 
         for colname in df_1.columns:
-            print(df_1[colname].multiply(df_2[colname]))
             df_3[colname] = df_1[colname].multiply(df_2[colname])
         df_list.append(df_3)
     asset_portfolio = pd.concat(df_list, axis=1, ignore_index=False)
@@ -99,14 +98,14 @@ def assetProportions(asset_portfolio):
     return asset_portfolio_proportions
 
 def calculateProportionOfReturn(asset_portfolio):
-    asset_prop_of_return = asset_portfolio \
-                            .diff() \
-                            .div(asset_portfolio.sum(axis=1).diff(), axis=0)
-    # Below commented line is used to get top 5 assets
-    #  with highest proportion of return during latest time period
-    # asset_prop_of_return[-1:].apply(pd.Series.nlargest, axis=1, n=5)
-    # TODO: This function needs more work and practicality how it should be used
-    return asset_prop_of_return
+    df = asset_portfolio
+    weights = df.div(df.sum(axis=1), axis=0)
+    df_return = df.pct_change().fillna(0).replace([np.inf, -np.inf], 0)
+
+    df_contr = df_return.mul(weights, axis=1)
+    df_contr['Portfolio'] = df_contr.sum(axis=1)
+    df_contr = df_contr * 100
+    return df_contr.round(2)
 
 def betaOfPortfolio(assets_config_df
                     , proportions_df
@@ -160,5 +159,22 @@ def betaOfPortfolio(assets_config_df
                         (proportions_df.tail(1)/100)
                         [ticker].iloc[0])
     # Return portfolio weighted beta
-    return sum(beta_list).round(2)
+    beta_list = np.nan_to_num(beta_list, nan=0)
+    beta = sum(beta_list).round(4)
+    return beta
 
+
+def volatilityStatistics(df):
+    # Calculate volatility for each asset
+    volatitility = np.sqrt(df.var(axis = 1))
+    volatitility_df = pd.DataFrame(volatitility
+                                    , columns = ['volatility']
+                                    , index = volatitility.index)
+    # Calculate mean absolute deviation for each asset
+    mad = (df.sub(df.mean(axis=0), axis=1)).abs().mean(axis = 1)
+    mad_df = pd.DataFrame(mad
+                            , columns = ['mad']
+                            , index = mad.index)
+    # Combine two measures
+    vol_df = pd.concat([volatitility_df, mad_df], axis = 1)
+    return vol_df
