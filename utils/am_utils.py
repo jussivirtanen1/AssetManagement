@@ -32,6 +32,7 @@ def getAssetQuantitiesTillDate(merged_big_df, date):
                         .groupby(['name'])['quantity'].sum()
 
 def calculateQuantitiesForEachAsset(merged_big_df, usable_dates_list):
+    df_list = []
     for date in usable_dates_list:
         df_list.append(getAssetQuantitiesTillDate(merged_big_df, date)
                        .to_frame()
@@ -56,7 +57,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
                             ['yahoo_ticker'])] \
                             .multiply(1/yf_data[fx_list][fx], axis="index")
         # Idea is to create a new dataframe with all assets and their values in USD, 
-        # ame is done for each currency separately,
+        # same is done for each currency separately,
         # resulting in len(currencies) dataframes which can be merged together
         # and portfolio value calculated by summing all dataframes
         # together. In future function could take argument
@@ -85,6 +86,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
         # some currency defined in row 35, hardcoded for now.
         df_3 = pd.DataFrame() 
         for colname in df_1.columns:
+            print(df_1[colname].multiply(df_2[colname]))
             df_3[colname] = df_1[colname].multiply(df_2[colname])
         df_list.append(df_3)
     asset_portfolio = pd.concat(df_list, axis=1, ignore_index=False)

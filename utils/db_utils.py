@@ -57,8 +57,10 @@ def getAssets(filter: int):
                       ,id.asset_id
                       ,id.yahoo_ticker
                       ,id.yahoo_fx_ticker
+                      ,info.instrument
                 FROM asset_management_prod.asset_ids AS id
                 LEFT JOIN asset_management_prod.asset_owner AS own ON id.asset_id = own.asset_id
+                LEFT JOIN asset_management_prod.asset_info AS info ON id.asset_id = info.asset_id
                 WHERE owner_id = {filter}
                 """
     return query

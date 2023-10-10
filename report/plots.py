@@ -19,8 +19,8 @@ def asset_management():
     # Get assets list as yahoo tickers
     assets_list = amu.getAssetsList(assets_df)
     # Fetch usable dates and non-null yahoo finance data
-
-    data = du.getDataFromYahoo(assets_list, start_date = "2022-01-01")
+    # First transaction is around the beginning of February 2018
+    data = du.getDataFromYahoo(assets_list, start_date = "2018-02-01")
 
     data_cleaned = du.getUsableDataForAssets(data)
 

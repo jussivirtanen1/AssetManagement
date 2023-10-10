@@ -9,7 +9,7 @@ pd.set_option('display.max_rows', None)
 
 def ma_plots_all_stock():
     # config_df = dbu.getConfigurationsData('config/user_config.json')
-    stock_config_df = dbu.fetchDataFromDB(dbu.getAssets('c') \
+    stock_config_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20) \
                         ,conn = dbu.getDBConnection(env = 'prod' \
                         ,user_file_name='config/user_config.json' \
                         ,user_index=0))
@@ -17,7 +17,7 @@ def ma_plots_all_stock():
 
     for ticker in stock_config_df['yahoo_ticker']:
         print(ticker)
-        asset_mav = yf.download(tickers= ticker, start='2020-01-01')
+        asset_mav = yf.download(tickers= ticker, start='2023-01-01')
         asset_mav['SMA_200'] = asset_mav['Close'] \
                                 .rolling(window=200, min_periods=1) \
                                 .mean()
