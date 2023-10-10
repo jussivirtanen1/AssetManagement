@@ -118,7 +118,7 @@ def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
                      ,index=False)
     # Empty (overwrite) existing insert file
     write_file_name = f'db_insert/{table}_insert_{schema_attr}.csv'
-    print("succesfully loaded data in to database!")
+    print("Succesfully loaded data in to database!")
     pd.DataFrame(data=[], columns = insert_file_columns) \
                         .to_csv(write_file_name, index = False)
     print("Succesfully emptied insert table!")
