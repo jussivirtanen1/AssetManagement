@@ -184,7 +184,7 @@ def test_assetProportions():
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[0] == 100.0
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[1] == 100.0
 
-def test_calculateProportionOfReturn():
+# def test_calculateProportionOfReturn():
     # assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
     #                                                         ,test_postgresql_df
     #                                                         ,am_test_yahoo_df)
