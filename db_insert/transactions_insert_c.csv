@@ -1,6 +1,0 @@
-date,name,ticker,isin,currency,quantity,price_fx,price_eur,amount
-#Examples below
-#2024-08-15,Xtrackers Russell 2000 UCITS ETF 1C,XRS2,IE00BJZ2DD79,EUR,X,XX.X,XX.X,XX.X
-#2024-08-15,iShares Core S&P 500 UCITS ETF USD (Acc),SXR8,IE00B5BMR087,EUR,X,XX.X,XX.X,XX.X
-#2024-08-15,iShares MSCI India UCITS ETF USD (Acc),QDV5,IE00BZCQB185,EUR,X,XX.X,XX.X,XX.X
-#2024-08-15,Xtrackers MSCI World UCITS ETF 1C,XDWD,IE00BJ0KDQ92,EUR,X,XX.X,XX.X,XX.X

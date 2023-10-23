@@ -21,10 +21,10 @@ def createMergedBigDF(sql_df: pd.core.frame.DataFrame
                       , config_df: pd.core.frame.DataFrame):
     sql_df['date'] = sql_df['date'].astype(str)
     merged_big_df = pd.merge(sql_df[['date', 'name', 'quantity']]
-                             , config_df
-                             , left_on = 'name'
-                             , right_on = 'name'
-                             , how = 'left')
+                             ,config_df
+                             ,left_on = 'name'
+                             ,right_on = 'name'
+                             ,how = 'left')
     return merged_big_df
 
 def getAssetQuantitiesTillDate(merged_big_df, date):
@@ -43,7 +43,7 @@ def calculateQuantitiesForEachAsset(merged_big_df, usable_dates_list):
 def getAssetsList(assets_config_df):
     assets_list = list(np.concatenate([assets_config_df['yahoo_fx_ticker']
                                        .unique()
-                                       , assets_config_df['yahoo_ticker']
+                                       ,assets_config_df['yahoo_ticker']
                                        .unique()]))
     return assets_list
 
@@ -64,7 +64,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
 
         df_1 = df_1.rename(columns=dict(
                                         zip(assets_config_df.yahoo_ticker
-                                            , assets_config_df.name)))
+                                            ,assets_config_df.name)))
         # With above plan, for loops in functions are avoided
         #  and functions are easier to separate and test.
         
@@ -76,7 +76,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
         usable_dates_list = yf_data.index.strftime('%Y-%m-%d').tolist()
 
         df_2 = calculateQuantitiesForEachAsset(merged_big_df
-                                               , usable_dates_list) \
+                                               ,usable_dates_list) \
                                                [df_1.columns]
         df_1.index = list(df_2.index)
 
@@ -89,6 +89,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
             df_3[colname] = df_1[colname].multiply(df_2[colname])
         df_list.append(df_3)
     asset_portfolio = pd.concat(df_list, axis=1, ignore_index=False)
+    asset_portfolio = asset_portfolio.loc[:, (asset_portfolio.iloc[-1] != 0)]
     return asset_portfolio
 
 def assetProportions(asset_portfolio):

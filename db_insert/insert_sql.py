@@ -10,19 +10,18 @@ pd.set_option('display.max_columns', None)
 # transactions_c_key_columns = ['date', 'name', 'currency', 'quantity', 'amount']
 
 def insertBankAccounts():
-    dbu.insertToDBFromFile('asset_management_p'
-                            ,'bank_accounts'
+    dbu.insertToDBFromFile('asset_management_prod'
+                            ,'savings_account'
                             ,key_columns = ['event_type', 'name', 'date'
-                            , 'return_type', 'amount', 'bank', 'account']
-                            ,schema_attr='p')
+                            'asset_id', 'owner_id', 'amount', 'currency'])
     
 def insertTransactions():
-    dbu.insertToDBFromFile('asset_management_p' \
+    dbu.insertToDBFromFile('asset_management_prod' \
     ,'transactions'
-    ,key_columns = ['event_type', 'name', 'date', 'return_type', 'industry', \
-    'instrument', 'quantity', 'amount', 'bank', 'account']
+    ,key_columns = ['asset_id', 'owner_id', 'name', 'date', 'quantity', 'amount']
     ,schema_attr='p')
-    # key_columns = ['date', 'name', 'currency', 'quantity', 'amount'])
+
+
 
 if __name__ == "__main__":
     print('Executing insert database operation!')

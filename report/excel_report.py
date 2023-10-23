@@ -7,12 +7,12 @@ import utils.am_utils as amu
 pd.set_option('display.max_columns', None)
 
 def asset_management():
-    assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20) \
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 10) \
             ,conn = dbu.getDBConnection(env = 'prod' \
                                         ,user_file_name='config/user_config.json' \
                                         ,user_index=0))
     # Fetch full data from asset_management_db table
-    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 20) \
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 10) \
             , conn = dbu.getDBConnection(env = 'prod' \
                                         ,user_file_name='config/user_config.json' \
                                         ,user_index=0))
@@ -75,11 +75,11 @@ def asset_management():
     vol_df = vol_df.round(2)
 
     with pd.ExcelWriter(os.path.join(os.path.expanduser("~")
-                                     , "Desktop"
-                                     , "Analysis_October.xlsx")) as writer:
+                                     ,"Desktop"
+                                     ,"Analysis_October.xlsx")) as writer:
         etf_assets_proportions.to_excel(writer, sheet_name='ETF', index=True)
         fund_assets_proportions \
-                            .to_excel(writer, sheet_name='Mutual fund', index=True)
+                              .to_excel(writer, sheet_name='Mutual fund', index=True)
         stock_assets_proportions.to_excel(writer, sheet_name='Stock', index=True)
         asset_contr.to_excel(writer, sheet_name='Asset contribution', index=True)
         vol_df.to_excel(writer, sheet_name='Volatility', index=True)
