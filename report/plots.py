@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 pd.set_option('display.max_columns', None)
 
 def asset_management():
-    assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20)
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 10)
                         ,conn = dbu.getDBConnection(env = 'prod'
                         ,user_file_name='config/user_config.json'
                         ,user_index=0))
     # Fetch full data from asset_management_db table
-    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 20) \
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 10) \
                         ,conn = dbu.getDBConnection(env = 'prod' \
                         ,user_file_name='config/user_config.json' \
                         ,user_index=0))
@@ -31,6 +31,10 @@ def asset_management():
     asset_portfolio = amu.assetPortfolioOverTime(assets_df \
                                                , postgresql_table \
                                                , yf_data)
+    
+    # if asset has been nad its proportion in portfolio is zero then exclude from it portfolio.
+    assets_df = assets_df[assets_df['name'].isin(asset_portfolio.columns)]
+    
     # Optionally, calculate asset portfolio proportions
     asset_portfolio_proportions = amu.assetProportions(asset_portfolio)
 

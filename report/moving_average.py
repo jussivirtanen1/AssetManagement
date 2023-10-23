@@ -8,7 +8,7 @@ import utils.db_utils as dbu
 pd.set_option('display.max_rows', None)
 
 def ma_plots_all_stock():
-    stock_config_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 20) \
+    stock_config_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 10) \
                         ,conn = dbu.getDBConnection(env = 'prod' \
                         ,user_file_name='config/user_config.json' \
                         ,user_index=0))

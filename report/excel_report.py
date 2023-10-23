@@ -13,7 +13,7 @@ def asset_management():
                                         ,user_index=0))
     # Fetch full data from asset_management_db table
     postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 10) \
-            , conn = dbu.getDBConnection(env = 'prod' \
+            ,conn = dbu.getDBConnection(env = 'prod' \
                                         ,user_file_name='config/user_config.json' \
                                         ,user_index=0))
     # Get assets list as yahoo tickers
@@ -32,6 +32,9 @@ def asset_management():
     asset_portfolio = amu.assetPortfolioOverTime(assets_df
                                                 ,postgresql_table
                                                 ,yf_data)
+    
+    # if asset has been nad its proportion in portfolio is zero then exclude from it portfolio.
+    assets_df = assets_df[assets_df['name'].isin(asset_portfolio.columns)]
 
     # Calculate asset portfolio proportions of total portfolio return
     asset_contr = amu.calculateProportionOfReturn(asset_portfolio)
@@ -43,25 +46,31 @@ def asset_management():
     return_times_proportion_df = proportions_df.mul(asset_portfolio.pct_change()
                                                     .fillna(0)
                                                     .replace([np.inf, -np.inf], 0)
-                                                    , axis = 'columns')
+                                                    ,axis = 'columns')
     
     vol_df = amu.volatilityStatistics(return_times_proportion_df)
+
+
+    
+
+
+    
 
     # Calculate beta of the portfolio against two indices (benchmarks):
     # S&P500 and Stoxx Europe 600
     # S&P500 benchmark ticker in yahoo ^GSPC
     # Stoxx Europe 600 benchmark ticker in yahoo ^STOXX
     betaOnSP500 = amu.betaOfPortfolio(assets_df
-                        , proportions_df.rename(columns=dict(zip(assets_df.name
-                        , assets_df.yahoo_ticker)))
-                        , '^GSPC', start_date = '2020-01-01')
+                        ,proportions_df.rename(columns=dict(zip(assets_df.name
+                        ,assets_df.yahoo_ticker)))
+                        ,'^GSPC', start_date = '2020-01-01')
     betaOnStoxxEurope600 = amu.betaOfPortfolio(assets_df
-                        , proportions_df.rename(columns=dict(zip(assets_df.name
-                        , assets_df.yahoo_ticker)))
-                        , '^STOXX', start_date = '2020-01-01')
+                        ,proportions_df.rename(columns=dict(zip(assets_df.name
+                        ,assets_df.yahoo_ticker)))
+                        ,'^STOXX', start_date = '2020-01-01')
     beta_df = pd.DataFrame(data = [(betaOnSP500, betaOnStoxxEurope600)]
-                        , columns=['Beta on S&P500', 'Beta on Stoxx Europe 600']
-                        , index = ['beta'])
+                        ,columns=['Beta on S&P500', 'Beta on Stoxx Europe 600']
+                        ,index = ['beta'])
     
     # Define different asset types to get proportions for each of them individually
     etf_assets_df = dbu.getConfigByInstrument(assets_df, 'ETF')
