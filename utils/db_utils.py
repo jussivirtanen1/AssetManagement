@@ -73,7 +73,7 @@ def getAssets(filter: int):
 
 def insertToDBFromFile(schema, table, key_columns: list):
     query = f"""SELECT * FROM {schema}.{table}"""
-    config_df = getConfigurationsData('config/user_config.json')
+    # config_df = getConfigurationsData('config/user_config.json')
     db_conn = getDBConnection(env = 'prod' \
                             ,user_file_name='config/user_config.json' \
                             ,user_index=0)
