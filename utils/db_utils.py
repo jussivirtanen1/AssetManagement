@@ -30,7 +30,7 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
         config.read('tests/passwords_tests.config')
     # Specify for database connection
     engine_string = config_df['engine'][user_index] \
-                    + config_df['user_name'][user_index] + ':' \
+                    + config_df['username'][user_index] + ':' \
                     + config.get('PASSWORDS', 'password') \
                     + '@' + config_df['host_name'][user_index] \
                     + ':' + config_df['port'][user_index] \
@@ -74,10 +74,9 @@ def getAssets(filter: int):
 def insertToDBFromFile(schema, table, key_columns: list):
     query = f"""SELECT * FROM {schema}.{table}"""
     config_df = getConfigurationsData('config/user_config.json')
-    db_conn = getDBConnection(user_file_name='config/user_config.json' \
-                    ,user=config_df['username'][0] \
-                    ,host_name=config_df['host_name'][0] \
-                    ,db=config_df['database'][0], user_index=0)
+    db_conn = getDBConnection(env = 'prod' \
+                            ,user_file_name='config/user_config.json' \
+                            ,user_index=0)
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows

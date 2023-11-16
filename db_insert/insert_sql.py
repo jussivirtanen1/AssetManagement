@@ -17,13 +17,13 @@ def insertBankAccounts():
     
 def insertTransactions():
     dbu.insertToDBFromFile('asset_management_prod' \
-    ,'transactions'
-    ,key_columns = ['asset_id', 'owner_id', 'name', 'date', 'quantity', 'amount']
-    ,schema_attr='p')
+    ,'asset_transactions'
+    ,key_columns = ['asset_id', 'owner_id', 'name', 'date', 'quantity', 'amount'])
 
 
 
 if __name__ == "__main__":
     print('Executing insert database operation!')
-    insertBankAccounts()
+    # insertBankAccounts()
     # insertTransactions()
+    print('Done!')

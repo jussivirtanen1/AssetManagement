@@ -1,6 +1,7 @@
 ### Configuration files ###
 config/user_config.json
 config/passwords.config
+db_insert/examples/asset_transactions_insert.csv
 
 ### SQL templates ###
 sql/c_insert-TEMPLATE.sql

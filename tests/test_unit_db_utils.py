@@ -33,7 +33,7 @@ def test_getConfigByInstrument():
 def test_getConfigurationsData():
     user_config_df = dbu.getConfigurationsData('tests/mock_user_config.json')
     assert len(user_config_df) == 2
-    assert user_config_df['user_name'][0] == 'testuser'
+    assert user_config_df['username'][0] == 'testuser'
     assert user_config_df['host_name'][0] == 'localhost'
     assert user_config_df['database'][0] == 'testdb'
     assert user_config_df['port'][0] == '5432'
