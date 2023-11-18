@@ -1,6 +1,63 @@
 import utils.db_utils as dbu
 import pandas as pd
 
+# # asset_id_table:
+# test_asset_ids_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
+#                                     , 'Tanska Indeksirahasto', 'Salesforce'],
+#                           'asset_id': [2008, 1012, 1007, 1008, 1013],
+#                           'yahoo_ticker': ['NDA-FI.HE', 'SAMPO.HE', '0P0001K6NM.F'
+#                                     , '0P000134KA.CO', 'CRM'],
+#                           'yahoo_fx_ticker': ['EUREUR=X', 'EUREUR=X'
+#                                     , 'EUREUR=X', 'EURDKK=X', 'EURUSD=X'],
+#                           'isin': ['FI4000297767', 'FI0009003305', 'IE00BMTD2W97'
+#                                     , 'SE0005993078', 'US79466L3024']
+# }
+# # asset_info_table:
+# test_asset_info_data ={'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
+#                                     , 'Tanska Indeksirahasto', 'Salesforce'],
+#                         'asset_id': [2008, 1012, 1007, 1008, 1013],
+#                         'currency': ['EUR', 'EUR', 'EUR', 'DKK', 'USD'],
+#                         'instrument': ['Stock', 'Stock', 'Mutual fund',
+#                                         'Mutual fund', 'Stock'],
+#                         'geographical_area': ['Finland', 'Finland', 'North America',
+#                                                 'Denmark', 'North America'],
+#                         'industry': ['Finance', 'Insurance', 'General index',
+#                                         'General index', 'IT and consulting']
+# }
+# # asset_owner_table:
+# test_asset_owner_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto',
+#                                     'Tanska Indeksirahasto', 'Salesforce'],
+#                         'asset_id': [2008, 1012, 1007, 1008, 1013],
+#                         'owner_id': [10, 10, 10, 10, 10],
+#                         'bank': ['Nordea', 'Nordea', 'Nordnet', 'Nordnet', 'Nordea'],
+#                         'account': ['Osakesäästötili', 'Osakesäästötili', 'Arvo-osuustili',
+#                                         'Arvo-osuustili', 'Osakesäästötili']
+# }
+# # asset_transactions_table:
+# test_asset_transactions_data = {'event_type': ['Osto', 'Osto', 'Osto'
+#                                                 ,'Osto', 'Merkintä', 'Merkintä'],
+#                                 'asset_id': [2008, 1012, 1007, 1008, 1013],
+#                                 'owner_id': [10, 10, 10, 10, 10],
+#                                 'name': [],
+#                                 'date': [],
+#                                 'quantity': [],
+#                                 'price_fx': [],
+#                                 'price_eur': [],
+#                                 'amount': []
+}
+
+# # get db connection
+# db_conn = dbu.getDBConnection(env = 'test' \
+#                         ,user_file_name='tests/mock_user_config.json' \
+#                         ,user_index=0)
+
+# # Insert data to database
+# insert_df.to_sql(name = table
+#                     ,schema = schema
+#                     ,con=db_conn
+#                     ,if_exists="append"
+#                     ,index=False)
+
 # Test dataframes for assets config
 test_assets_config_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
                                     , 'Tanska Indeksirahasto', 'Salesforce'],

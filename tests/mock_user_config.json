@@ -1,6 +1,6 @@
 {
     "config": [
-        {"host_name": "localhost", "username": "testuser", "password": "testpassword", "database":"testdb", "port":"5432", "engine":"postgresql+psycopg2://"},
+        {"host_name": "localhost", "username": "testuser", "password": "testpassword", "database":"am_db_test", "port":"5432", "engine":"postgresql+psycopg2://"},
         {"host_name": "example.com", "username": "produser", "password": "prodpassword", "database":"proddb", "port":"5432", "engine":"postgresql+psycopg2://"}
     ]
 }
