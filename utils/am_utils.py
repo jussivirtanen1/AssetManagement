@@ -17,15 +17,17 @@ def createAssetNameDict(config_df: pd.core.frame.DataFrame):
         asset_name_dict[i] = config_df[config_df['name'] == i]['yahoo_ticker'].values
     return asset_name_dict
 
-def createMergedBigDF(sql_df: pd.core.frame.DataFrame
-                      , config_df: pd.core.frame.DataFrame):
-    sql_df['date'] = sql_df['date'].astype(str)
-    merged_big_df = pd.merge(sql_df[['date', 'name', 'quantity']]
-                             ,config_df
-                             ,left_on = 'name'
-                             ,right_on = 'name'
-                             ,how = 'left')
-    return merged_big_df
+# Obsolete function due to new tables in database!
+
+# def createMergedBigDF(sql_df: pd.core.frame.DataFrame
+#                       , config_df: pd.core.frame.DataFrame):
+#     sql_df['date'] = sql_df['date'].astype(str)
+#     merged_big_df = pd.merge(sql_df
+#                              ,config_df
+#                              ,left_on = 'asset_id'
+#                              ,right_on = 'asset_id'
+#                              ,how = 'left')
+#     return merged_big_df
 
 def getAssetQuantitiesTillDate(merged_big_df, date):
     return merged_big_df[merged_big_df['date'] <= date] \
@@ -68,12 +70,18 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
         # With above plan, for loops in functions are avoided
         #  and functions are easier to separate and test.
         
-        merged_big_df = createMergedBigDF(postgresql_table, assets_config_df)
+        merged_big_df = pd.merge(postgresql_table \
+                             ,assets_config_df \
+                             ,left_on = 'asset_id' \
+                             ,right_on = 'asset_id' \
+                             ,how = 'left')
         # Get asset quantities till each each usable date
         #  and multiply them by asset value in that date.
 
         # Get usable dates from yf_data dataframe
-        usable_dates_list = yf_data.index.strftime('%Y-%m-%d').tolist()
+        usable_dates_list = yf_data.index.tolist()
+
+
 
         df_2 = calculateQuantitiesForEachAsset(merged_big_df
                                                ,usable_dates_list) \
