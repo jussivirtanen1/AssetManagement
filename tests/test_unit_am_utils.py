@@ -139,7 +139,13 @@ assets_postgresql_query = """SELECT trans.*
                           """
 
 test_postgresql_df = dbu.fetchDataFromDB(assets_postgresql_query, conn = test_db_engine)
-test_postgresql_df['date'][0]
+
+# test_postgresql_df
+
+# amu.calculateQuantitiesForEachAsset(\
+#                             test_postgresql_df \
+#                             ,[datetime.date(2023, 5, 30), datetime.date(2023, 6, 30), datetime.date(2023, 9, 30)])
+
 # # Test dataframes for assets config and postgresql table
 # test_assets_config_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
 #                                     , 'Tanska Indeksirahasto', 'Salesforce'],
@@ -205,7 +211,7 @@ am_test_yahoo_data = {'0P000134KA.CO': [257.76, 257.54],
                    'SAMPO.HE': [41.12, 41.13]}
 
 am_test_yahoo_df = pd.DataFrame(data=am_test_yahoo_data)
-am_test_yahoo_df['Date'] = pd.to_datetime(['2023-06-30', '2023-07-03']) 
+am_test_yahoo_df['Date'] = [datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)]
 am_test_yahoo_df = am_test_yahoo_df.set_index('Date')
 
 
@@ -264,23 +270,23 @@ def test_getAssetQuantitiesTillDate():
 def test_calculateQuantitiesForEachAsset():
     assets_q_df = amu.calculateQuantitiesForEachAsset(\
                             test_postgresql_df \
-                            , [datetime.date(2023, 5, 30), datetime.date(2023, 5, 30), datetime.date(2023, 9, 30)])
+                            , [datetime.date(2023, 5, 30), datetime.date(2023, 6, 30), datetime.date(2023, 9, 30)])
     assert set(assets_q_df.index) == set([datetime.date(2023, 5, 30) \
-                                        , datetime.date(2023, 6, 30) \
-                                        , datetime.date(2023, 9, 30)])
+                                        ,datetime.date(2023, 6, 30) \
+                                        ,datetime.date(2023, 9, 30)])
     assert set(assets_q_df.columns) == set(['Salesforce' \
                                             , 'Sampo Oyj' \
                                             , 'Nordea Bank Oyj' \
                                             , 'Tanska Indeksirahasto' \
                                             , 'USA Indeksirahasto'])
-    assert assets_q_df.loc['2023-05-30', 'Salesforce'] == 3.0
-    assert assets_q_df.loc['2023-09-30', 'Salesforce'] == 5.0
-    assert assets_q_df.loc['2023-05-30', 'Sampo Oyj'] == 0.0
-    assert assets_q_df.loc['2023-05-30', 'Nordea Bank Oyj'] == 0.0
-    assert assets_q_df.loc['2023-06-30', 'Sampo Oyj'] == 3.0
-    assert assets_q_df.loc['2023-09-30', 'USA Indeksirahasto'] == 3.77
-    assert assets_q_df.loc['2023-06-30', 'Tanska Indeksirahasto'] == 7.27
-    assert assets_q_df.loc['2023-05-30', 'Tanska Indeksirahasto'] == 0.00
+    assert assets_q_df.loc[datetime.date(2023, 5, 30), 'Salesforce'] == 3.0
+    assert assets_q_df.loc[datetime.date(2023, 9, 30), 'Salesforce'] == 5.0
+    assert assets_q_df.loc[datetime.date(2023, 5, 30), 'Sampo Oyj'] == 0.0
+    assert assets_q_df.loc[datetime.date(2023, 5, 30), 'Nordea Bank Oyj'] == 0.0
+    assert assets_q_df.loc[datetime.date(2023, 6, 30), 'Sampo Oyj'] == 3.0
+    assert assets_q_df.loc[datetime.date(2023, 9, 30), 'USA Indeksirahasto'] == 3.77
+    assert assets_q_df.loc[datetime.date(2023, 6, 30), 'Tanska Indeksirahasto'] == 7.27
+    assert assets_q_df.loc[datetime.date(2023, 5, 30), 'Tanska Indeksirahasto'] == 0.00
     
 def test_getAssetsList():
     # Test that function returns a list of assets
@@ -297,8 +303,8 @@ def test_getAssetsList():
 
 def test_assetPortfoliOverTime():
     assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
-                                , test_postgresql_df
-                                , am_test_yahoo_df)
+                                ,test_postgresql_df
+                                ,am_test_yahoo_df)
     assert not assetPortfolioOverTime_df.isnull().values.any()
     assert set(assetPortfolioOverTime_df.index) == set([datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)])
     assert set(assetPortfolioOverTime_df.columns) == set(['Nordea Bank Oyj'
@@ -307,7 +313,7 @@ def test_assetPortfoliOverTime():
                                             , 'Tanska Indeksirahasto'
                                             , 'Salesforce'])
     assert len(assetPortfolioOverTime_df) == 2
-    assert assetPortfolioOverTime_df.loc['2023-07-03', 'Nordea Bank Oyj'] == 10.06
+    assert assetPortfolioOverTime_df.loc[datetime.date(2023, 7, 3), 'Nordea Bank Oyj'] == 10.06
     # TODO: This needs more tests
 
 def test_assetProportions():
@@ -332,8 +338,8 @@ def test_assetProportions():
 
 def test_betaOfPortfolio():
   assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
-                                                      , test_postgresql_df
-                                                      , am_test_yahoo_df)
+                                                      ,test_postgresql_df
+                                                      ,am_test_yahoo_df)
   beta_proportions_df = amu.assetProportions(assetPortfolioOverTime_df)
   assert amu.betaOfPortfolio(test_assets_config_df
                           ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
