@@ -2,7 +2,6 @@ import utils.am_utils as amu
 import utils.db_utils as dbu
 from sqlalchemy import text
 import pandas as pd
-import numpy as np
 import datetime
 
 
