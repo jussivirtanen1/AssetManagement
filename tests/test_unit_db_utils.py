@@ -58,7 +58,7 @@ test_asset_info_df.to_sql(name = 'asset_info' \
                     ,if_exists="append" \
                     ,index=False)
 
-asset_config_query = f"""SELECT ids.*
+asset_config_query = """SELECT ids.*
                     ,info.currency
                     ,info.instrument
                     ,info.geographical_area

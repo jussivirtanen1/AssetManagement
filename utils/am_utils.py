@@ -124,13 +124,15 @@ def betaOfPortfolio(assets_config_df
     beta_list = []
     print('Using ticker' + benchmark_ticker + ' as benchmark')
     benchmark = yf.download(tickers = benchmark_ticker
-                            ,start=start_date
-                            ,end = datetime.datetime.strftime((proportions_df.index.max() + datetime.timedelta(days=1)), "%Y-%m-%d"))
+                        ,start=start_date
+                        ,end = datetime.datetime.strftime((proportions_df.index.max()
+                        + datetime.timedelta(days=1)), "%Y-%m-%d"))
     for ticker in assets_config_df['yahoo_ticker']:
         print('Download daily price data for ' + ticker)
         asset_price = yf.download(tickers = ticker
-                                ,start=start_date
-                                ,end = datetime.datetime.strftime((proportions_df.index.max() + datetime.timedelta(days=1)), "%Y-%m-%d"))
+                        ,start=start_date
+                        ,end = datetime.datetime.strftime((proportions_df.index.max()
+                        + datetime.timedelta(days=1)), "%Y-%m-%d"))
         benchmark_df = pd.DataFrame(benchmark['Close']) \
                             .rename(columns={'Close':'benchmark_price'})
         asset_price_df = pd.DataFrame(asset_price['Close']) \
