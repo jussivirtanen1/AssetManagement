@@ -31,7 +31,8 @@ def asset_management():
     # Get asset portfolio by usable dates and asset positions on that date
     asset_portfolio = amu.assetPortfolioOverTime(assets_df
                                                 ,postgresql_table
-                                                ,yf_data)
+                                                ,yf_data
+                                                ,usable_dates_list)
     
     # if asset has been nad its proportion in portfolio is zero then exclude from it portfolio.
     assets_df = assets_df[assets_df['name'].isin(asset_portfolio.columns)]
@@ -85,7 +86,7 @@ def asset_management():
 
     with pd.ExcelWriter(os.path.join(os.path.expanduser("~")
                                      ,"Desktop"
-                                     ,"Analysis_October.xlsx")) as writer:
+                                     ,"Analysis_December.xlsx")) as writer:
         etf_assets_proportions.to_excel(writer, sheet_name='ETF', index=True)
         fund_assets_proportions \
                               .to_excel(writer, sheet_name='Mutual fund', index=True)

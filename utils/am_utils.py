@@ -50,7 +50,7 @@ def getAssetsList(assets_config_df):
     return assets_list
 
     # Get only fx columns from yf_data
-def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
+def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data, usable_dates_list):
     fx_list = list(assets_config_df['yahoo_fx_ticker'].unique())
     # Multiply asset columns by fx columns
     df_list = []
@@ -80,7 +80,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
         #  and multiply them by asset value in that date.
 
         # Get usable dates from yf_data dataframe
-        usable_dates_list = yf_data.index.tolist()
+        # usable_dates_list = yf_data.index.tolist()
 
 
 

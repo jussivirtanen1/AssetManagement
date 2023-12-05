@@ -40,8 +40,7 @@ def getUsableDatesList(data, freq: str):
         # To specifically coerce the results of the groupby to a list:
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': 'max'})
-                                     ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datag.agg({'datetime_col': 'max'})['datetime_col'].tolist()[i].date())
     return usable_dates_list
 
 def getUsableDatesForAssets(data, usable_dates_list: list):
