@@ -6,21 +6,20 @@ import matplotlib.pyplot as plt
 pd.set_option('display.max_columns', None)
 
 def asset_management():
-#     config_df = dbu.getConfigurationsData('config/user_config.json')
-    assets_df = dbu.fetchDataFromDB(dbu.getAssets(type = 'c')
+    assets_df = dbu.fetchDataFromDB(dbu.getAssets(filter = 10)
                         ,conn = dbu.getDBConnection(env = 'prod'
                         ,user_file_name='config/user_config.json'
                         ,user_index=0))
     # Fetch full data from asset_management_db table
-    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(type = 'c') \
+    postgresql_table = dbu.fetchDataFromDB(dbu.getDBQuery(filter = 10) \
                         ,conn = dbu.getDBConnection(env = 'prod' \
                         ,user_file_name='config/user_config.json' \
                         ,user_index=0))
     # Get assets list as yahoo tickers
     assets_list = amu.getAssetsList(assets_df)
     # Fetch usable dates and non-null yahoo finance data
-
-    data = du.getDataFromYahoo(assets_list, start_date = "2022-01-01")
+    # First transaction is around the beginning of February 2018
+    data = du.getDataFromYahoo(assets_list, start_date = "2018-02-01")
 
     data_cleaned = du.getUsableDataForAssets(data)
 
@@ -30,8 +29,13 @@ def asset_management():
 
     # Get asset portfolio by usable dates and asset positions on that date
     asset_portfolio = amu.assetPortfolioOverTime(assets_df \
-                                               , postgresql_table \
-                                               , yf_data)
+                                               ,postgresql_table \
+                                               ,yf_data
+                                               ,usable_dates_list)
+    
+    # if asset has been nad its proportion in portfolio is zero then exclude from it portfolio.
+    assets_df = assets_df[assets_df['name'].isin(asset_portfolio.columns)]
+    
     # Optionally, calculate asset portfolio proportions
     asset_portfolio_proportions = amu.assetProportions(asset_portfolio)
 

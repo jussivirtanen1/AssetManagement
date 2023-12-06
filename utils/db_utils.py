@@ -30,7 +30,7 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
         config.read('tests/passwords_tests.config')
     # Specify for database connection
     engine_string = config_df['engine'][user_index] \
-                    + config_df['user_name'][user_index] + ':' \
+                    + config_df['username'][user_index] + ':' \
                     + config.get('PASSWORDS', 'password') \
                     + '@' + config_df['host_name'][user_index] \
                     + ':' + config_df['port'][user_index] \
@@ -38,28 +38,51 @@ def getDBConnection(env: str, user_file_name: str, user_index = 0):
     conn = create_engine(engine_string)
     return conn
 
-def getDBQuery(type: str):
-    query = f"""SELECT * FROM asset_management_{type}.transactions"""
+def getDBQuery(filter: int):
+    query = f"""SELECT event_type
+                      ,asset_id
+                      ,owner_id
+                      ,name
+                      ,date
+                      ,quantity
+                      ,price_fx
+                      ,price_eur
+                      ,amount
+                      FROM asset_management_prod.asset_transactions
+                      WHERE owner_id = {filter}"""
     return query
 
-def getAssets(type: str):
-    query = f"""SELECT * FROM asset_management_{type}.assets"""
+def getAssets(filter: int):
+    query = f"""SELECT id.name
+                      ,id.asset_id
+                      ,id.yahoo_ticker
+                      ,id.yahoo_fx_ticker
+                      ,info.instrument
+                FROM asset_management_prod.asset_ids AS id
+                LEFT JOIN asset_management_prod.asset_owner AS own ON id.asset_id = own.asset_id
+                LEFT JOIN asset_management_prod.asset_info AS info ON id.asset_id = info.asset_id
+                WHERE owner_id = {filter}
+                """
     return query
 
 
-def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
+# def getAssets(type: str):
+#     query = f"""SELECT * FROM asset_management_{type}.assets"""
+#     return query
+
+
+def insertToDBFromFile(schema, table, key_columns: list):
     query = f"""SELECT * FROM {schema}.{table}"""
-    config_df = getConfigurationsData('config/user_config.json')
-    db_conn = getDBConnection(user_file_name='config/user_config.json' \
-                    ,user=config_df['username'][0] \
-                    ,host_name=config_df['host_name'][0] \
-                    ,db=config_df['database'][0], user_index=0)
+    # config_df = getConfigurationsData('config/user_config.json')
+    db_conn = getDBConnection(env = 'prod' \
+                            ,user_file_name='config/user_config.json' \
+                            ,user_index=0)
     db_df = fetchDataFromDB(query, conn = db_conn)
 
     # Get data to be inserted from csv, ignore commented example rows
-    insert_df = pd.read_csv(f'db_insert/{table}_insert_{schema_attr}.csv'
-                            , comment="#"
-                            , quotechar='"')
+    insert_df = pd.read_csv(f'db_insert/{table}_insert.csv'
+                            ,comment="#"
+                            ,quotechar='"')
     insert_file_columns = insert_df.columns
     # Convert date column to correct datetime format
     insert_df['date'] = pd.to_datetime(insert_df['date']
@@ -80,7 +103,7 @@ def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
     #  value from merge should be empty, i.e. below empty function returns True
     if (insert_df.merge(db_df, on = key_columns, how = 'inner').empty) is not True:
         raise ValueError('Insert file has rows existing in the database already!')
-    # Create unique UUID for values to be inserted. TODO: apply this later
+    # Create unique UUID for values to be inserted. TODO: apply this later if needed
     # import uuid
     # insert_df['uuid'] = [uuid.uuid4() for _ in range(len(insert_df.index))]
     # Check that UUID between db and insertion table are unique, should be True
@@ -93,8 +116,8 @@ def insertToDBFromFile(schema, table, key_columns: list, schema_attr: 'p'):
                      ,if_exists="append"
                      ,index=False)
     # Empty (overwrite) existing insert file
-    write_file_name = f'db_insert/{table}_insert_{schema_attr}.csv'
-    print("succesfully loaded data in to database!")
+    write_file_name = f'db_insert/{table}_insert_empty.csv'
+    print("Succesfully loaded data in to database!")
     pd.DataFrame(data=[], columns = insert_file_columns) \
                         .to_csv(write_file_name, index = False)
     print("Succesfully emptied insert table!")

@@ -17,15 +17,17 @@ def createAssetNameDict(config_df: pd.core.frame.DataFrame):
         asset_name_dict[i] = config_df[config_df['name'] == i]['yahoo_ticker'].values
     return asset_name_dict
 
-def createMergedBigDF(sql_df: pd.core.frame.DataFrame
-                      , config_df: pd.core.frame.DataFrame):
-    sql_df['date'] = sql_df['date'].astype(str)
-    merged_big_df = pd.merge(sql_df[['date', 'name', 'quantity']]
-                             , config_df
-                             , left_on = 'name'
-                             , right_on = 'name'
-                             , how = 'left')
-    return merged_big_df
+# Obsolete function due to new tables in database!
+
+# def createMergedBigDF(sql_df: pd.core.frame.DataFrame
+#                       , config_df: pd.core.frame.DataFrame):
+#     sql_df['date'] = sql_df['date'].astype(str)
+#     merged_big_df = pd.merge(sql_df
+#                              ,config_df
+#                              ,left_on = 'asset_id'
+#                              ,right_on = 'asset_id'
+#                              ,how = 'left')
+#     return merged_big_df
 
 def getAssetQuantitiesTillDate(merged_big_df, date):
     return merged_big_df[merged_big_df['date'] <= date] \
@@ -43,12 +45,12 @@ def calculateQuantitiesForEachAsset(merged_big_df, usable_dates_list):
 def getAssetsList(assets_config_df):
     assets_list = list(np.concatenate([assets_config_df['yahoo_fx_ticker']
                                        .unique()
-                                       , assets_config_df['yahoo_ticker']
+                                       ,assets_config_df['yahoo_ticker']
                                        .unique()]))
     return assets_list
 
     # Get only fx columns from yf_data
-def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
+def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data, usable_dates_list):
     fx_list = list(assets_config_df['yahoo_fx_ticker'].unique())
     # Multiply asset columns by fx columns
     df_list = []
@@ -57,26 +59,33 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
                             ['yahoo_ticker'])] \
                             .multiply(1/yf_data[fx_list][fx], axis="index")
         # Idea is to create a new dataframe with all assets and their values in USD, 
-        # ame is done for each currency separately,
+        # same is done for each currency separately,
         # resulting in len(currencies) dataframes which can be merged together
         # and portfolio value calculated by summing all dataframes
         # together. In future function could take argument
 
         df_1 = df_1.rename(columns=dict(
                                         zip(assets_config_df.yahoo_ticker
-                                            , assets_config_df.name)))
+                                            ,assets_config_df.name)))
         # With above plan, for loops in functions are avoided
         #  and functions are easier to separate and test.
         
-        merged_big_df = createMergedBigDF(postgresql_table, assets_config_df)
+        merged_big_df = postgresql_table
+                            # pd.merge(postgresql_table \
+                            #  ,assets_config_df \
+                            #  ,left_on = 'asset_id' \
+                            #  ,right_on = 'asset_id' \
+                            #  ,how = 'left')
         # Get asset quantities till each each usable date
         #  and multiply them by asset value in that date.
 
         # Get usable dates from yf_data dataframe
-        usable_dates_list = yf_data.index.strftime('%Y-%m-%d').tolist()
+        # usable_dates_list = yf_data.index.tolist()
+
+
 
         df_2 = calculateQuantitiesForEachAsset(merged_big_df
-                                               , usable_dates_list) \
+                                               ,usable_dates_list) \
                                                [df_1.columns]
         df_1.index = list(df_2.index)
 
@@ -89,6 +98,7 @@ def assetPortfolioOverTime(assets_config_df, postgresql_table, yf_data):
             df_3[colname] = df_1[colname].multiply(df_2[colname])
         df_list.append(df_3)
     asset_portfolio = pd.concat(df_list, axis=1, ignore_index=False)
+    asset_portfolio = asset_portfolio.loc[:, (asset_portfolio.iloc[-1] != 0)]
     return asset_portfolio
 
 def assetProportions(asset_portfolio):
@@ -98,14 +108,14 @@ def assetProportions(asset_portfolio):
     return asset_portfolio_proportions
 
 def calculateProportionOfReturn(asset_portfolio):
-    asset_prop_of_return = asset_portfolio \
-                            .diff() \
-                            .div(asset_portfolio.sum(axis=1).diff(), axis=0)
-    # Below commented line is used to get top 5 assets
-    #  with highest proportion of return during latest time period
-    # asset_prop_of_return[-1:].apply(pd.Series.nlargest, axis=1, n=5)
-    # TODO: This function needs more work and practicality how it should be used
-    return asset_prop_of_return
+    df = asset_portfolio
+    weights = df.div(df.sum(axis=1), axis=0)
+    df_return = df.pct_change().fillna(0).replace([np.inf, -np.inf], 0)
+
+    df_contr = df_return.mul(weights, axis=1)
+    df_contr['Portfolio'] = df_contr.sum(axis=1)
+    df_contr = df_contr * 100
+    return df_contr.round(2)
 
 def betaOfPortfolio(assets_config_df
                     , proportions_df
@@ -114,23 +124,15 @@ def betaOfPortfolio(assets_config_df
     beta_list = []
     print('Using ticker' + benchmark_ticker + ' as benchmark')
     benchmark = yf.download(tickers = benchmark_ticker
-                            , start=start_date
-                            , end = datetime.datetime
-                            .strftime(datetime.datetime
-                            .strptime(proportions_df.index.max()
-                            , "%Y-%m-%d")
-                            + datetime.timedelta(days=1)
-                            , "%Y-%m-%d"))
+                        ,start=start_date
+                        ,end = datetime.datetime.strftime((proportions_df.index.max()
+                        + datetime.timedelta(days=1)), "%Y-%m-%d"))
     for ticker in assets_config_df['yahoo_ticker']:
         print('Download daily price data for ' + ticker)
         asset_price = yf.download(tickers = ticker
-                                , start=start_date
-                                , end = datetime.datetime
-                                .strftime(datetime.datetime
-                                .strptime(proportions_df.index.max()
-                                , "%Y-%m-%d") 
-                                + datetime.timedelta(days=1)
-                                , "%Y-%m-%d"))
+                        ,start=start_date
+                        ,end = datetime.datetime.strftime((proportions_df.index.max()
+                        + datetime.timedelta(days=1)), "%Y-%m-%d"))
         benchmark_df = pd.DataFrame(benchmark['Close']) \
                             .rename(columns={'Close':'benchmark_price'})
         asset_price_df = pd.DataFrame(asset_price['Close']) \
@@ -159,5 +161,22 @@ def betaOfPortfolio(assets_config_df
                         (proportions_df.tail(1)/100)
                         [ticker].iloc[0])
     # Return portfolio weighted beta
-    return sum(beta_list).round(2)
+    beta_list = np.nan_to_num(beta_list, nan=0)
+    beta = sum(beta_list).round(4)
+    return beta
 
+
+def volatilityStatistics(df):
+    # Calculate volatility for each asset
+    volatitility = np.sqrt(df.var(axis = 1))
+    volatitility_df = pd.DataFrame(volatitility
+                                    , columns = ['volatility']
+                                    , index = volatitility.index)
+    # Calculate mean absolute deviation for each asset
+    mad = (df.sub(df.mean(axis=0), axis=1)).abs().mean(axis = 1)
+    mad_df = pd.DataFrame(mad
+                            , columns = ['mad']
+                            , index = mad.index)
+    # Combine two measures
+    vol_df = pd.concat([volatitility_df, mad_df], axis = 1)
+    return vol_df

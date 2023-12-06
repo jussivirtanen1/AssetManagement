@@ -14,6 +14,8 @@ def getUsableDataForAssets(data):
     data_2 = data.copy()
     data_2['EUREUR=X'] = 1.0
     # data.loc[:, 'EUREUR=X'] = 1.0
+    # Forward fill and backfill any NaN values. Some assets have no data for some dates.
+    data_2 = data_2.ffill().bfill()
     # Remove any rows with NaN values
     data_2 = data_2[~data_2.isnull().any(axis=1)]
     return data_2
@@ -31,15 +33,14 @@ def getUsableDatesList(data, freq: str):
     if (freq == 'D'):
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].date())
     else:
         # Finally, find the max date in each month
         datetime_df = datag['datetime_col'].max()
         # To specifically coerce the results of the groupby to a list:
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datag.agg({'datetime_col': 'max'})
-                                     ['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datag.agg({'datetime_col': 'max'})['datetime_col'].tolist()[i].date())
     return usable_dates_list
 
 def getUsableDatesForAssets(data, usable_dates_list: list):

@@ -1,5 +1,5 @@
-event_type,name,date,return_type,currency,amount,bank,usage,account
-#Examples below
+event_type,owner_id,asset_id,name,date,interest_rate,amount,currency
+#(Outdated) Examples below
 #Nosto,Svea Säästötili,2023-09-20,Lyhyt korko,EUR,XX,Svea,"Laskut",Säästötili
 #Nosto,Svea Säästötili,2023-09-25,Lyhyt korko,EUR,XX,Svea,"Sampo osto ja käyttörahaa",Säästötili
 #Nosto,Svea Säästötili,2024-01-22,Lyhyt korko,EUR,xx,Svea,"",Säästötili
