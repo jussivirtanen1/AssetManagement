@@ -33,7 +33,7 @@ def getUsableDatesList(data, freq: str):
     if (freq == 'D'):
         usable_dates_list = []
         for i in range(len(datetime_df)):
-            usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].strftime('%Y-%m-%d'))
+            usable_dates_list.append(datetime_df['datetime_col'].tolist()[i].date())
     else:
         # Finally, find the max date in each month
         datetime_df = datag['datetime_col'].max()

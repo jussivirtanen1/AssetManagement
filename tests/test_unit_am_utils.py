@@ -212,6 +212,7 @@ am_test_yahoo_data = {'0P000134KA.CO': [257.76, 257.54],
 am_test_yahoo_df = pd.DataFrame(data=am_test_yahoo_data)
 am_test_yahoo_df['Date'] = [datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)]
 am_test_yahoo_df = am_test_yahoo_df.set_index('Date')
+usable_dates_list = [datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)]
 
 
 def test_createIndustryDict():
@@ -303,7 +304,8 @@ def test_getAssetsList():
 def test_assetPortfoliOverTime():
     assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
                                 ,test_postgresql_df
-                                ,am_test_yahoo_df)
+                                ,am_test_yahoo_df
+                                ,usable_dates_list)
     assert not assetPortfolioOverTime_df.isnull().values.any()
     assert set(assetPortfolioOverTime_df.index) == set([datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)])
     assert set(assetPortfolioOverTime_df.columns) == set(['Nordea Bank Oyj'
@@ -318,7 +320,8 @@ def test_assetPortfoliOverTime():
 def test_assetProportions():
     assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
                                                             ,test_postgresql_df
-                                                            ,am_test_yahoo_df)
+                                                            ,am_test_yahoo_df
+                                                            ,usable_dates_list)
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[0] == 100.0
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[1] == 100.0
 
@@ -338,7 +341,8 @@ def test_assetProportions():
 def test_betaOfPortfolio():
   assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
                                                       ,test_postgresql_df
-                                                      ,am_test_yahoo_df)
+                                                      ,am_test_yahoo_df
+                                                      ,usable_dates_list)
   beta_proportions_df = amu.assetProportions(assetPortfolioOverTime_df)
   assert amu.betaOfPortfolio(test_assets_config_df
                           ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name

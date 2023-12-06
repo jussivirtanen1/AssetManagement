@@ -29,8 +29,9 @@ def asset_management():
 
     # Get asset portfolio by usable dates and asset positions on that date
     asset_portfolio = amu.assetPortfolioOverTime(assets_df \
-                                               , postgresql_table \
-                                               , yf_data)
+                                               ,postgresql_table \
+                                               ,yf_data
+                                               ,usable_dates_list)
     
     # if asset has been nad its proportion in portfolio is zero then exclude from it portfolio.
     assets_df = assets_df[assets_df['name'].isin(asset_portfolio.columns)]
