@@ -12,7 +12,7 @@ pd.set_option('display.max_columns', None)
 def insertBankAccounts():
     dbu.insertToDBFromFile('asset_management_prod'
                             ,'savings_account'
-                            ,key_columns = ['event_type', 'name', 'date'
+                            ,key_columns = ['event_type', 'name', 'date',
                             'asset_id', 'owner_id', 'amount', 'currency'])
     
 def insertTransactions():
