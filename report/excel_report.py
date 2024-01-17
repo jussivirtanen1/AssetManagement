@@ -86,7 +86,7 @@ def asset_management():
 
     with pd.ExcelWriter(os.path.join(os.path.expanduser("~")
                                      ,"Desktop"
-                                     ,"Analysis_December.xlsx")) as writer:
+                                     ,"Analysis_January.xlsx")) as writer:
         etf_assets_proportions.to_excel(writer, sheet_name='ETF', index=True)
         fund_assets_proportions \
                               .to_excel(writer, sheet_name='Mutual fund', index=True)
