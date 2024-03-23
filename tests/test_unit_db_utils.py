@@ -16,7 +16,6 @@ test_conn.execute(text("COMMIT;"))
 
 # test_conn.execute(text("ROLLBACK;"))
 
-
 # asset_ids_table:
 test_asset_ids_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
                                     , 'Tanska Indeksirahasto', 'Salesforce'],
@@ -69,26 +68,6 @@ asset_config_query = """SELECT ids.*
 test_assets_config_df = dbu.fetchDataFromDB(asset_config_query, conn = test_db_engine)
 
 
-# # Test dataframes for assets config
-# test_assets_config_data = {'name': ['Nordea Bank Oyj', 'Sampo Oyj', 'USA Indeksirahasto'
-#                                     , 'Tanska Indeksirahasto', 'Salesforce'],
-#                           'yahoo_ticker': ['NDA-FI.HE', 'SAMPO.HE', '0P0001K6NM.F'
-#                                     , '0P000134KA.CO', 'CRM'],
-#                           'yahoo_fx_ticker': ['EUREUR=X', 'EUREUR=X'
-#                                     , 'EUREUR=X', 'EURDKK=X', 'EURUSD=X'],
-#                           'currency': ['EUR', 'EUR', 'EUR'
-#                                     , 'DKK', 'USD'],
-#                           'instrument': ['Stock', 'Stock', 'Mutual fund'
-#                                     , 'Mutual fund', 'Stock'],
-#                           'region': ['Finland', 'Finland', 'North America'
-#                                      , 'Denmark', 'North America'],
-#                           'bank': ['Nordea', 'Nordea', 'Nordnet'
-#                                    , 'Nordnet', 'Nordea'],
-#                           'industry': ['Finance', 'Insurance', 'General index'
-#                                     , 'General index', 'IT and consulting']}
-
-# test_assets_config_df = pd.DataFrame(data=test_assets_config_data)
-
 def test_getConfigByInstrument():
 # Test with valid instrument
     mutual_fund_config_df = dbu.getConfigByInstrument(test_assets_config_df \
@@ -125,13 +104,3 @@ def test_getDBConnection():
     assert db_conn_1.url.database == 'proddb'
     assert db_conn_1.url.port == 5432
     assert db_conn_1.url.drivername == 'postgresql+psycopg2'
-
-# Modify below query to match current schema
-# def test_DBQuery():
-#     db_query = dbu.getDBQuery(type = 'test')
-#     assert db_query == 'SELECT * FROM asset_management_test.transactions'
-
-# Modify below query to match current schema
-# def test_getAssets():
-#     db_query = dbu.getAssets(type = 'test')
-#     assert db_query == 'SELECT * FROM asset_management_test.assets'

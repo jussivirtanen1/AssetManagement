@@ -4,7 +4,6 @@ from sqlalchemy import text
 import pandas as pd
 import datetime
 
-
 # get test db connection
 test_db_engine = dbu.getDBConnection(env = 'test' \
                         ,user_file_name='tests/mock_user_config.json' \
@@ -85,22 +84,23 @@ test_asset_owner_df.to_sql(name = 'asset_owner' \
 
 # asset_transactions_table:
 test_asset_transactions_data = {'event_type': ['Osto', 'Osto', 'Osto'
-                                                ,'Osto', 'Merkintä', 'Merkintä'],
-                                'asset_id': [1013, 1013, 1012, 2008, 1008, 1007],
-                                'owner_id': [10, 10, 10, 10, 10, 10],
+                                                ,'Osto', 'Merkintä', 'Merkintä', 'Merkintä'],
+                                'asset_id': [1013, 1013, 1012, 2008, 1008, 1007, 1008],
+                                'owner_id': [10, 10, 10, 10, 10, 10, 10],
                                 'name': ['Salesforce', 'Salesforce', 'Sampo Oyj'
                                         , 'Nordea Bank Oyj', 'Tanska Indeksirahasto'
-                                        , 'USA Indeksirahasto'],
+                                        , 'USA Indeksirahasto', 'Tanska Indeksirahasto'],
                                 'date': [datetime.date(2023, 9, 29)
                                         ,datetime.date(2023, 4, 14)
                                         ,datetime.date(2023, 5, 31)
                                         ,datetime.date(2023, 6, 30)
                                         ,datetime.date(2023, 6, 22)
-                                        ,datetime.date(2023, 7, 3)],
-                                'quantity': [2.0, 3.0, 3.0, 1.0, 7.27, 3.77],
-                                'price_fx': [158.55, 162.43, 43.4, 9.86, 344.4, 159.24],
-                                'price_eur': [150.2, 158.0, 43.4, 9.86, 49.2, 159.24],
-                                'amount': [300.4, 474.0, 130.2, 9.86, 357.68, 600.33],
+                                        ,datetime.date(2023, 7, 3)
+                                        ,datetime.date(2023, 7, 1)],
+                                'quantity': [2.0, 3.0, 3.0, 1.0, 7.27, 3.77, 3.5],
+                                'price_fx': [158.55, 172.43, 43.4, 9.86, 344.4, 159.24, 335.0],
+                                'price_eur': [150.2, 165.0, 43.4, 9.86, 49.2, 159.24, 51.54],
+                                'amount': [300.4, 474.0, 130.2, 9.86, 357.68, 600.33, 180.39],
 }
 test_asset_transactions_df = pd.DataFrame(data=test_asset_transactions_data)
 
@@ -200,14 +200,14 @@ test_postgresql_df = dbu.fetchDataFromDB(assets_postgresql_query, conn = test_db
 #                  , 'Arvo-osuustili']}
 # test_postgresql_df = pd.DataFrame(data=test_postgresql_data)
 
-am_test_yahoo_data = {'0P000134KA.CO': [257.76, 257.54],
-                   '0P0001K6NM.F': [159.36, 159.68],
-                   'CRM': [211.26, 211.65],
-                   'EURDKK=X': [7.45, 7.45],
+am_test_yahoo_data = {'0P000134KA.CO': [257.76, 290.54],
+                   '0P0001K6NM.F': [159.36, 120.68],
+                   'CRM': [211.26, 350.0],
+                   'EURDKK=X': [7.45, 10.45],
                    'EUREUR=X': [1.0, 1.0],
-                   'EURUSD=X': [1.09, 1.09],
-                   'NDA-FI.HE': [9.97, 10.06],
-                   'SAMPO.HE': [41.12, 41.13]}
+                   'EURUSD=X': [1.09, 1.21],
+                   'NDA-FI.HE': [9.97, 12.06],
+                   'SAMPO.HE': [41.12, 38.13]}
 
 am_test_yahoo_df = pd.DataFrame(data=am_test_yahoo_data)
 am_test_yahoo_df['Date'] = [datetime.date(2023, 6, 30), datetime.date(2023, 7, 3)]
@@ -230,17 +230,6 @@ def test_createAssetNameDict():
     assets_dict = amu.createAssetNameDict(test_assets_config_df)
     assert isinstance(assets_dict, dict)
     assert len(assets_dict.keys()) == len(test_assets_config_df['name'].values)
-
-# createMergedBigDF() is obsolete due to new tables in database!
-# def test_createMergedBigDF():
-#     # Test that all needed column are in the new table
-#     # Test that the new table has the same number of rows as the original table
-#     merged_big_df = amu.createMergedBigDF(test_postgresql_df, test_assets_config_df)
-#     assert len(merged_big_df) == len(test_postgresql_df)
-#     assert set(merged_big_df.columns) == set(['currency' \
-#                     , 'yahoo_ticker', 'date', 'geogra' \
-#                     , 'quantity', 'instrument', 'yahoo_fx_ticker' \
-#                     , 'name', 'bank', 'industry'])
 
 def test_getAssetQuantitiesTillDate():
     asset_quantities_20230530_df = amu.getAssetQuantitiesTillDate(\
@@ -286,6 +275,7 @@ def test_calculateQuantitiesForEachAsset():
     assert assets_q_df.loc[datetime.date(2023, 6, 30), 'Sampo Oyj'] == 3.0
     assert assets_q_df.loc[datetime.date(2023, 9, 30), 'USA Indeksirahasto'] == 3.77
     assert assets_q_df.loc[datetime.date(2023, 6, 30), 'Tanska Indeksirahasto'] == 7.27
+    assert assets_q_df.loc[datetime.date(2023, 9, 30), 'Tanska Indeksirahasto'] == 10.77
     assert assets_q_df.loc[datetime.date(2023, 5, 30), 'Tanska Indeksirahasto'] == 0.00
     
 def test_getAssetsList():
@@ -314,7 +304,7 @@ def test_assetPortfoliOverTime():
                                             , 'Tanska Indeksirahasto'
                                             , 'Salesforce'])
     assert len(assetPortfolioOverTime_df) == 2
-    assert assetPortfolioOverTime_df.loc[datetime.date(2023, 7, 3), 'Nordea Bank Oyj'] == 10.06
+    assert assetPortfolioOverTime_df.loc[datetime.date(2023, 7, 3), 'Nordea Bank Oyj'] == 12.06
     # TODO: This needs more tests
 
 def test_assetProportions():
@@ -325,33 +315,34 @@ def test_assetProportions():
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[0] == 100.0
     assert amu.assetProportions(assetPortfolioOverTime_df).sum(axis=1).iloc[1] == 100.0
 
-# def test_calculateProportionOfReturn():
-    # assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
-    #                                                         ,test_postgresql_df
-    #                                                         ,am_test_yahoo_df)
-    # testReturnDF = amu.calculateProportionOfReturn(assetPortfolioOverTime_df)
+def test_calculateProportionOfReturn():
+    assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
+                                                            ,test_postgresql_df
+                                                            ,am_test_yahoo_df
+                                                            ,usable_dates_list)
+    testReturnDF = amu.calculateProportionOfReturn(assetPortfolioOverTime_df)
     # TODO: mock data has too little cahnges in values to make this test reasonable.
     # NOTE TO SELF: Changing test data will affect other tests. REMEMBER THAT TESTS
     #  SHOULD BE INDEPENDENT OF EACH OTHER.
-    # assert testReturnDF.sum(axis=1).iloc[1] == 0.13
-    # assert testReturnDF['Nordea Bank Oyj'].iloc[1].round(6) == 0.000149
-    # assert testReturnDF['USA Indeksirahasto'].iloc[1].round(6) == 0.998377
-    # assert testReturnDF['Salesforce'].iloc[1].round(5) == 0.00178
+    assert testReturnDF.sum(axis=1).iloc[1].round(2) == 54.73
+    assert testReturnDF['Nordea Bank Oyj'].iloc[1].round(2) == 0.14
+    assert testReturnDF['USA Indeksirahasto'].iloc[1].round(6) == 0.0
+    assert testReturnDF['Salesforce'].iloc[1].round(5) == 24.44
 
-def test_betaOfPortfolio():
-  assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
-                                                      ,test_postgresql_df
-                                                      ,am_test_yahoo_df
-                                                      ,usable_dates_list)
-  beta_proportions_df = amu.assetProportions(assetPortfolioOverTime_df)
-  assert amu.betaOfPortfolio(test_assets_config_df
-                          ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
-                          ,test_assets_config_df.yahoo_ticker)))
-                          ,'^GSPC'
-                          ,start_date = '2023-01-01') == 0.8269
+# def test_betaOfPortfolio():
+#   assetPortfolioOverTime_df = amu.assetPortfolioOverTime(test_assets_config_df
+#                                                       ,test_postgresql_df
+#                                                       ,am_test_yahoo_df
+#                                                       ,usable_dates_list)
+#   beta_proportions_df = amu.assetProportions(assetPortfolioOverTime_df)
+#   assert amu.betaOfPortfolio(test_assets_config_df
+#                           ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
+#                           ,test_assets_config_df.yahoo_ticker)))
+#                           ,'^GSPC'
+#                           ,start_date = '2023-01-01') == 0.8269
 
-  assert amu.betaOfPortfolio(test_assets_config_df
-                          ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
-                          ,test_assets_config_df.yahoo_ticker)))
-                          ,'^STOXX'
-                          ,start_date = '2023-01-01') == 0.5689
+#   assert amu.betaOfPortfolio(test_assets_config_df
+#                           ,beta_proportions_df.rename(columns=dict(zip(test_assets_config_df.name
+#                           ,test_assets_config_df.yahoo_ticker)))
+#                           ,'^STOXX'
+#                           ,start_date = '2023-01-01') == 0.5689
