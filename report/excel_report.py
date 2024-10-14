@@ -24,7 +24,7 @@ def asset_management():
 
     data_cleaned = du.getUsableDataForAssets(data)
 
-    usable_dates_list = du.getUsableDatesList(data_cleaned, freq = 'M')
+    usable_dates_list = du.getUsableDatesList(data_cleaned, freq = 'ME')
 
     yf_data = du.getUsableDatesForAssets(data_cleaned, usable_dates_list)
 
